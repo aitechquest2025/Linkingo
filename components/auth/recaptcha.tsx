@@ -19,8 +19,7 @@ export function Recaptcha({ onChange }: RecaptchaProps) {
             <ReCAPTCHA
                 sitekey={siteKey}
                 onChange={onChange}
-                size="invisible"
-                badge="bottomright"
+                theme="light"
             />
         </div>
     );
