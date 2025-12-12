@@ -70,6 +70,38 @@ export default function RevenuePage() {
         }
     };
 
+    const exportToCSV = () => {
+        if (entries.length === 0) {
+            alert("No revenue entries to export");
+            return;
+        }
+
+        // Create CSV content
+        const headers = ["Date", "Category", "Amount (₹)", "Note"];
+        const rows = entries.map(entry => [
+            entry.date.toLocaleDateString(),
+            entry.category,
+            entry.amount.toFixed(2),
+            entry.note || ""
+        ]);
+
+        const csvContent = [
+            headers.join(","),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+        ].join("\n");
+
+        // Create and download file
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `revenue_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const handleAddEntry = async () => {
         if (!user || !newEntry.amount) return;
         setAdding(true);
@@ -185,7 +217,13 @@ export default function RevenuePage() {
                 <Card className="border-gray-200 bg-white">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium text-zinc-600">Entries</CardTitle>
-                        <Download className="h-4 w-4 text-zinc-600" />
+                        <button
+                            onClick={exportToCSV}
+                            className="hover:bg-zinc-100 p-2 rounded-lg transition-colors"
+                            title="Export to CSV"
+                        >
+                            <Download className="h-4 w-4 text-zinc-600 hover:text-blue-600" />
+                        </button>
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold text-black">{entries.length}</div>
