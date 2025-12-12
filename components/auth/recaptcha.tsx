@@ -1,6 +1,7 @@
 "use client";
 
 import ReCAPTCHA from "react-google-recaptcha";
+import { useEffect } from "react";
 
 interface RecaptchaProps {
     onChange: (token: string | null) => void;
@@ -9,9 +10,19 @@ interface RecaptchaProps {
 export function Recaptcha({ onChange }: RecaptchaProps) {
     const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
+    useEffect(() => {
+        if (!siteKey) {
+            // Auto-pass if no key configured (for development)
+            onChange("dev-bypass-token");
+        }
+    }, [siteKey, onChange]);
+
     if (!siteKey) {
-        console.error("reCAPTCHA site key not configured");
-        return null;
+        return (
+            <div className="text-yellow-600 text-sm text-center my-4 bg-yellow-50 p-3 rounded">
+                ⚠️ reCAPTCHA not configured (development mode)
+            </div>
+        );
     }
 
     return (
