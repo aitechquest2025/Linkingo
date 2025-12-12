@@ -198,9 +198,19 @@ export default function SettingsPage() {
                                 ) : (
                                     <div className="w-24 h-16 rounded-lg bg-zinc-100 border-2 border-dashed border-zinc-300" />
                                 )}
-                                <Button variant="outline" size="sm" className="border-zinc-300">
-                                    <Upload className="mr-2 h-4 w-4" />
-                                    Upload
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-zinc-300"
+                                    onClick={() => triggerFileInput("logo")}
+                                    disabled={uploading === "logo"}
+                                >
+                                    {uploading === "logo" ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Upload className="mr-2 h-4 w-4" />
+                                    )}
+                                    {uploading === "logo" ? "Uploading..." : "Upload"}
                                 </Button>
                             </div>
                         </div>
