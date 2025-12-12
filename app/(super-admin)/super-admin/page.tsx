@@ -31,13 +31,24 @@ export default function SuperAdminDashboard() {
             return;
         }
 
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists() || userDoc.data().role !== "superadmin") {
-            router.push("/dashboard");
-            return;
-        }
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            console.log("User document exists:", userDoc.exists());
+            console.log("User data:", userDoc.data());
+            console.log("User role:", userDoc.data()?.role);
 
-        loadStats();
+            if (!userDoc.exists() || userDoc.data().role !== "superadmin") {
+                console.log("Access denied - redirecting to dashboard");
+                router.push("/dashboard");
+                return;
+            }
+
+            console.log("Super admin access granted");
+            loadStats();
+        } catch (error) {
+            console.error("Error checking super admin:", error);
+            router.push("/dashboard");
+        }
     };
 
     const loadStats = async () => {
