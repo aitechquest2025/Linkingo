@@ -125,7 +125,7 @@ export function LinkManager() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold text-black">
-                            {isPremium ? "∞" : LINK_LIMIT - links.length}
+                            ∞
                         </div>
                     </CardContent>
                 </Card>
@@ -153,7 +153,7 @@ export function LinkManager() {
                 <CardHeader>
                     <CardTitle className="text-black">Add New Link</CardTitle>
                     <CardDescription>
-                        {isPremium ? "Unlimited links available" : `${links.length} / ${LINK_LIMIT} links used`}
+                        Unlimited links available for all users
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
