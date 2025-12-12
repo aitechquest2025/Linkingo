@@ -1,14 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth, db } from "@/lib/firebase"; // Ensure this path is correct
+import { auth, db } from "@/lib/firebase";
 import {
     onAuthStateChanged,
     GoogleAuthProvider,
-    GithubAuthProvider,
     signInWithPopup,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
+    signInWithPhoneNumber,
+    RecaptchaVerifier,
     signOut,
     User,
+    ApplicationVerifier,
+    ConfirmationResult
 } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
@@ -22,7 +28,6 @@ export function useAuth() {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                // Optional: sync user to Firestore on login
                 await saveUserToFirestore(currentUser);
             } else {
                 setUser(null);
@@ -37,19 +42,61 @@ export function useAuth() {
         try {
             const provider = new GoogleAuthProvider();
             await signInWithPopup(auth, provider);
-            router.push("/admin"); // Redirect to dashboard
+            router.push("/dashboard");
         } catch (error) {
             console.error("Error signing in with Google", error);
+            throw error;
         }
     };
 
-    const signInWithGithub = async () => {
+    const loginWithEmail = async (email: string, password: string) => {
         try {
-            const provider = new GithubAuthProvider();
-            await signInWithPopup(auth, provider);
-            router.push("/admin");
+            await signInWithEmailAndPassword(auth, email, password);
+            router.push("/dashboard");
         } catch (error) {
-            console.error("Error signing in with Github", error);
+            console.error("Error signing in with Email", error);
+            throw error;
+        }
+    };
+
+    const registerWithEmail = async (email: string, password: string) => {
+        try {
+            const result = await createUserWithEmailAndPassword(auth, email, password);
+            // Firestore save is handled by useEffect
+            router.push("/dashboard");
+            return result;
+        } catch (error) {
+            console.error("Error registering with Email", error);
+            throw error;
+        }
+    };
+
+    const resetPassword = async (email: string) => {
+        try {
+            await sendPasswordResetEmail(auth, email);
+        } catch (error) {
+            console.error("Error sending reset email", error);
+            throw error;
+        }
+    };
+
+    const loginWithPhone = async (phoneNumber: string, appVerifier: ApplicationVerifier) => {
+        try {
+            const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+            return confirmationResult;
+        } catch (error) {
+            console.error("Error initiating phone login", error);
+            throw error;
+        }
+    };
+
+    const verifyPhoneOtp = async (confirmationResult: ConfirmationResult, otp: string) => {
+        try {
+            await confirmationResult.confirm(otp);
+            router.push("/dashboard");
+        } catch (error) {
+            console.error("Error verifying OTP", error);
+            throw error;
         }
     };
 
@@ -67,17 +114,28 @@ export function useAuth() {
         const userSnap = await getDoc(userRef);
 
         if (!userSnap.exists()) {
-            const username = user.email?.split("@")[0] || `user_${user.uid.slice(0, 5)}`;
+            const username = user.email ? user.email.split("@")[0] : `user_${user.uid.slice(0, 5)}`;
             await setDoc(userRef, {
                 uid: user.uid,
                 email: user.email,
                 displayName: user.displayName,
                 photoURL: user.photoURL,
-                username: username, // Default username
+                phoneNumber: user.phoneNumber,
+                username: username,
                 createdAt: serverTimestamp(),
             });
         }
     };
 
-    return { user, loading, signInWithGoogle, signInWithGithub, logout };
+    return {
+        user,
+        loading,
+        signInWithGoogle,
+        loginWithEmail,
+        registerWithEmail,
+        resetPassword,
+        loginWithPhone,
+        verifyPhoneOtp,
+        logout
+    };
 }
