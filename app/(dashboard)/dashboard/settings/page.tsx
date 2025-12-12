@@ -8,12 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Loader2, Upload, User, Globe, Share2 } from "lucide-react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "@/lib/firebase";
 
 export default function SettingsPage() {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState<"photo" | "logo" | null>(null);
 
     const [profile, setProfile] = useState({
         username: "",
@@ -73,6 +75,54 @@ export default function SettingsPage() {
         }
     };
 
+    const handleImageUpload = async (file: File, type: "photo" | "logo") => {
+        if (!user) return;
+        setUploading(type);
+
+        try {
+            // Create a reference to the file in Firebase Storage
+            const storageRef = ref(storage, `users/${user.uid}/${type}-${Date.now()}.${file.name.split('.').pop()}`);
+
+            // Upload the file
+            await uploadBytes(storageRef, file);
+
+            // Get the download URL
+            const downloadURL = await getDownloadURL(storageRef);
+
+            // Update profile state
+            if (type === "photo") {
+                setProfile(prev => ({ ...prev, photoURL: downloadURL }));
+            } else {
+                setProfile(prev => ({ ...prev, coverURL: downloadURL }));
+            }
+
+            // Save to Firestore
+            await updateDoc(doc(db, "users", user.uid), {
+                [type === "photo" ? "photoURL" : "coverURL"]: downloadURL
+            });
+
+            alert(`${type === "photo" ? "Profile picture" : "Cover image"} uploaded successfully!`);
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            alert("Failed to upload image");
+        } finally {
+            setUploading(null);
+        }
+    };
+
+    const triggerFileInput = (type: "photo" | "logo") => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+                handleImageUpload(file, type);
+            }
+        };
+        input.click();
+    };
+
     const handleSave = async () => {
         if (!user) return;
         setSaving(true);
@@ -124,9 +174,19 @@ export default function SettingsPage() {
                                         {profile.displayName?.charAt(0) || "?"}
                                     </div>
                                 )}
-                                <Button variant="outline" size="sm" className="border-zinc-300">
-                                    <Upload className="mr-2 h-4 w-4" />
-                                    Upload
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-zinc-300"
+                                    onClick={() => triggerFileInput("photo")}
+                                    disabled={uploading === "photo"}
+                                >
+                                    {uploading === "photo" ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Upload className="mr-2 h-4 w-4" />
+                                    )}
+                                    {uploading === "photo" ? "Uploading..." : "Upload"}
                                 </Button>
                             </div>
                         </div>
