@@ -53,9 +53,15 @@ export default function UpgradePage() {
 
     const getCurrency = () => region === "india" ? "₹" : "$";
 
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white py-12">
             <div className="max-w-5xl mx-auto px-4">
+                {/* Discount Banner */}
+                <div className="mb-6 bg-gradient-to-r from-purple-600 to-violet-600 text-white py-3 px-6 rounded-full text-center">
+                    <p className="text-base md:text-lg font-bold">🎉 Limited Time Offer: Save 40% on Yearly Plans! 🎉</p>
+                </div>
+
                 {/* Header */}
                 <div className="text-center mb-12">
                     <h1 className="text-5xl font-bold text-black mb-4">Plans and pricing</h1>

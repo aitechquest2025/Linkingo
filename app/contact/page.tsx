@@ -22,13 +22,37 @@ export default function ContactPage() {
         e.preventDefault();
         setSending(true);
 
-        // Simulate sending (you can integrate with email service later)
-        setTimeout(() => {
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    access_key: "YOUR_ACCESS_KEY_HERE", // Get free key from web3forms.com
+                    name: formData.name,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                    to: "hellolinkingo@gmail.com",
+                }),
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                setSent(true);
+                setFormData({ name: "", email: "", subject: "", message: "" });
+                setTimeout(() => setSent(false), 5000);
+            } else {
+                throw new Error("Failed to send");
+            }
+        } catch (error) {
+            console.error("Error sending message:", error);
+            alert("Failed to send message. Please try again.");
+        } finally {
             setSending(false);
-            setSent(true);
-            setFormData({ name: "", email: "", subject: "", message: "" });
-            setTimeout(() => setSent(false), 5000);
-        }, 1500);
+        }
     };
 
     return (
