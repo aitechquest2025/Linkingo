@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Plus, Trash2, ExternalLink, Lock } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Lock, Crown, GripVertical } from "lucide-react";
 
 interface Link {
     id: string;
@@ -44,11 +44,51 @@ export function LinkManager() {
     };
 
     return (
-        <div className="space-y-6">
-            <Card className="bg-zinc-900 border-zinc-800 text-white">
+        <div className="max-w-4xl mx-auto space-y-6">
+            {/* Header Stats */}
+            <div className="grid gap-4 md:grid-cols-3">
+                <Card className="border-gray-200 bg-white">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-zinc-600">Total Links</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold text-black">{links.length}</div>
+                    </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-zinc-600">Links Remaining</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold text-black">
+                            {isPremium ? "∞" : LINK_LIMIT - links.length}
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card className="border-gray-200 bg-white">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-zinc-600">Status</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-lg font-semibold text-black flex items-center gap-2">
+                            {isPremium ? (
+                                <>
+                                    <Crown className="h-5 w-5 text-amber-500" />
+                                    Premium
+                                </>
+                            ) : (
+                                "Free"
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Add New Link */}
+            <Card className="border-gray-200 bg-white">
                 <CardHeader>
-                    <CardTitle>Add New Link</CardTitle>
-                    <CardDescription className="text-zinc-400">
+                    <CardTitle className="text-black">Add New Link</CardTitle>
+                    <CardDescription>
                         {isPremium ? "Unlimited links available" : `${links.length} / ${LINK_LIMIT} links used`}
                     </CardDescription>
                 </CardHeader>
@@ -59,57 +99,78 @@ export function LinkManager() {
                                 placeholder="Link Title (e.g. My Website)"
                                 value={newTitle}
                                 onChange={(e) => setNewTitle(e.target.value)}
-                                className="bg-black/50 border-zinc-800 text-white"
+                                className="bg-white border-zinc-300"
                             />
                             <Input
                                 placeholder="URL (https://...)"
                                 value={newUrl}
                                 onChange={(e) => setNewUrl(e.target.value)}
-                                className="bg-black/50 border-zinc-800 text-white"
+                                className="bg-white border-zinc-300"
                             />
                         </div>
 
                         {!canAddLink ? (
-                            <Button disabled className="w-full bg-zinc-800 text-zinc-400 cursor-not-allowed">
-                                <Lock className="mr-2 h-4 w-4" />
-                                Limit Reached (Upgrade to Add More)
-                            </Button>
+                            <div className="space-y-3">
+                                <Button disabled className="w-full bg-zinc-200 text-zinc-500 cursor-not-allowed">
+                                    <Lock className="mr-2 h-4 w-4" />
+                                    Limit Reached
+                                </Button>
+                                <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg text-center">
+                                    <Crown className="h-6 w-6 text-purple-600 mx-auto mb-2" />
+                                    <p className="text-sm font-medium text-purple-900 mb-1">Upgrade to Pro</p>
+                                    <p className="text-xs text-purple-700">Get unlimited links and advanced features</p>
+                                </div>
+                            </div>
                         ) : (
-                            <Button onClick={handleAddLink} className="w-full bg-white text-black hover:bg-zinc-200">
+                            <Button onClick={handleAddLink} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Link
                             </Button>
-                        )}
-
-                        {!isPremium && links.length >= LINK_LIMIT && (
-                            <div className="p-3 bg-violet-500/10 border border-violet-500/20 rounded-md text-sm text-violet-300 text-center">
-                                🚀 Unlock unlimited links with <strong>Linkingo Pro</strong>
-                            </div>
                         )}
                     </div>
                 </CardContent>
             </Card>
 
-            <div className="grid gap-4">
-                {links.map((link) => (
-                    <Card key={link.id} className="bg-zinc-900/50 border-zinc-800 text-white group hover:border-zinc-700 transition-colors">
-                        <CardContent className="p-4 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="p-2 bg-zinc-800 rounded-lg">
-                                    <ExternalLink className="h-5 w-5 text-zinc-400" />
+            {/* Links List */}
+            <Card className="border-gray-200 bg-white">
+                <CardHeader>
+                    <CardTitle className="text-black">Your Links</CardTitle>
+                    <CardDescription>Manage and organize your links</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-3">
+                        {links.length > 0 ? (
+                            links.map((link) => (
+                                <div key={link.id} className="flex items-center gap-3 p-4 border border-zinc-200 rounded-lg hover:border-purple-300 hover:bg-purple-50/50 transition-all group">
+                                    <GripVertical className="h-5 w-5 text-zinc-400 cursor-move" />
+                                    <div className="flex items-center gap-3 flex-1">
+                                        <div className="p-2 bg-purple-100 rounded-lg">
+                                            <ExternalLink className="h-5 w-5 text-purple-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-semibold text-black">{link.title}</h3>
+                                            <p className="text-sm text-zinc-500 truncate">{link.url}</p>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => deleteLink(link.id)}
+                                        className="text-zinc-400 hover:text-red-600 hover:bg-red-50"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold">{link.title}</h3>
-                                    <p className="text-sm text-zinc-500">{link.url}</p>
-                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-12">
+                                <ExternalLink className="h-12 w-12 text-zinc-300 mx-auto mb-3" />
+                                <p className="text-zinc-500">No links yet. Add your first link above!</p>
                             </div>
-                            <Button variant="ghost" size="icon" onClick={() => deleteLink(link.id)} className="text-zinc-500 hover:text-red-400 hover:bg-red-400/10">
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

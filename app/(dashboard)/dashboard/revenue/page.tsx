@@ -111,8 +111,8 @@ export default function RevenuePage() {
         <div className="max-w-6xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-black dark:text-white mb-2">Revenue Tracking</h1>
-                    <p className="text-zinc-600 dark:text-zinc-400">Track your earnings from all sources</p>
+                    <h1 className="text-3xl font-bold text-black mb-2">Revenue Tracking</h1>
+                    <p className="text-zinc-600">Track your earnings from all sources</p>
                 </div>
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogTrigger asChild>
@@ -171,24 +171,24 @@ export default function RevenuePage() {
 
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-2">
-                <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                <Card className="border-gray-200 bg-white">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Total Revenue</CardTitle>
+                        <CardTitle className="text-sm font-medium text-zinc-600">Total Revenue</CardTitle>
                         <DollarSign className="h-4 w-4 text-green-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-black dark:text-white">₹{totalRevenue.toFixed(2)}</div>
+                        <div className="text-3xl font-bold text-black">₹{totalRevenue.toFixed(2)}</div>
                         <p className="text-xs text-zinc-500 mt-1">All time</p>
                     </CardContent>
                 </Card>
 
-                <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                <Card className="border-gray-200 bg-white">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Entries</CardTitle>
+                        <CardTitle className="text-sm font-medium text-zinc-600">Entries</CardTitle>
                         <Download className="h-4 w-4 text-zinc-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-black dark:text-white">{entries.length}</div>
+                        <div className="text-3xl font-bold text-black">{entries.length}</div>
                         <p className="text-xs text-zinc-500 mt-1">Total records</p>
                     </CardContent>
                 </Card>
@@ -196,16 +196,16 @@ export default function RevenuePage() {
 
             {/* Category Breakdown */}
             {categoryBreakdown.length > 0 && (
-                <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                <Card className="border-gray-200 bg-white">
                     <CardHeader>
-                        <CardTitle className="text-black dark:text-white">Category Breakdown</CardTitle>
+                        <CardTitle className="text-black">Category Breakdown</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
                             {categoryBreakdown.map(item => (
                                 <div key={item.category} className="flex items-center justify-between">
-                                    <span className="text-sm text-zinc-700 dark:text-zinc-300">{item.category}</span>
-                                    <span className="text-sm font-semibold text-black dark:text-white">₹{item.total.toFixed(2)}</span>
+                                    <span className="text-sm text-zinc-700">{item.category}</span>
+                                    <span className="text-sm font-semibold text-black">₹{item.total.toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>
@@ -215,16 +215,16 @@ export default function RevenuePage() {
 
             {/* Recent Entries */}
             {entries.length > 0 ? (
-                <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                <Card className="border-gray-200 bg-white">
                     <CardHeader>
-                        <CardTitle className="text-black dark:text-white">Recent Entries</CardTitle>
+                        <CardTitle className="text-black">Recent Entries</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
                             {entries.slice(0, 10).map(entry => (
-                                <div key={entry.id} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+                                <div key={entry.id} className="flex items-center justify-between py-2 border-b border-zinc-100 last:border-0">
                                     <div>
-                                        <p className="text-sm font-medium text-black dark:text-white">{entry.category}</p>
+                                        <p className="text-sm font-medium text-black">{entry.category}</p>
                                         {entry.note && <p className="text-xs text-zinc-500">{entry.note}</p>}
                                     </div>
                                     <div className="text-right">
@@ -237,7 +237,7 @@ export default function RevenuePage() {
                     </CardContent>
                 </Card>
             ) : (
-                <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+                <Card className="border-gray-200 bg-white">
                     <CardContent className="py-12 text-center">
                         <p className="text-zinc-500">No revenue entries yet. Click "Add Entry" to get started!</p>
                     </CardContent>
