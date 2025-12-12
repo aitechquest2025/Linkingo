@@ -19,7 +19,8 @@ export function Recaptcha({ onChange }: RecaptchaProps) {
             <ReCAPTCHA
                 sitekey={siteKey}
                 onChange={onChange}
-                theme="dark"
+                size="invisible"
+                badge="bottomright"
             />
         </div>
     );
