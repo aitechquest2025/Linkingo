@@ -7,8 +7,12 @@ interface RecaptchaProps {
 }
 
 export function Recaptcha({ onChange }: RecaptchaProps) {
-    // Use dummy test key if env var is missing
-    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
+    const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+    if (!siteKey) {
+        console.error("reCAPTCHA site key not configured");
+        return null;
+    }
 
     return (
         <div className="flex justify-center my-4">

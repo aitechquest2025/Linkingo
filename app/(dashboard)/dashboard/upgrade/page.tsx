@@ -28,7 +28,7 @@ export default function UpgradePage() {
         {
             name: "Pro",
             icon: "👑",
-            priceIndia: { monthly: 49, yearly: 499 },
+            priceIndia: { monthly: 79, yearly: 570 }, // 40% discount: ₹948 → ₹570
             priceGlobal: { monthly: 1.49, yearly: 10 },
             description: "Unlock all features and grow your audience faster.",
             features: [
@@ -66,8 +66,8 @@ export default function UpgradePage() {
                         <button
                             onClick={() => setRegion("india")}
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${region === "india"
-                                    ? "bg-purple-600 text-white"
-                                    : "text-gray-600 hover:text-black"
+                                ? "bg-purple-600 text-white"
+                                : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             🇮🇳 India
@@ -75,8 +75,8 @@ export default function UpgradePage() {
                         <button
                             onClick={() => setRegion("global")}
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${region === "global"
-                                    ? "bg-purple-600 text-white"
-                                    : "text-gray-600 hover:text-black"
+                                ? "bg-purple-600 text-white"
+                                : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             🌍 Global
@@ -88,8 +88,8 @@ export default function UpgradePage() {
                         <button
                             onClick={() => setBillingCycle("monthly")}
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${billingCycle === "monthly"
-                                    ? "bg-purple-600 text-white"
-                                    : "text-gray-600 hover:text-black"
+                                ? "bg-purple-600 text-white"
+                                : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             Monthly
@@ -97,13 +97,13 @@ export default function UpgradePage() {
                         <button
                             onClick={() => setBillingCycle("yearly")}
                             className={`px-6 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${billingCycle === "yearly"
-                                    ? "bg-purple-600 text-white"
-                                    : "text-gray-600 hover:text-black"
+                                ? "bg-purple-600 text-white"
+                                : "text-gray-600 hover:text-black"
                                 }`}
                         >
                             Yearly
                             <span className="bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                Save {region === "india" ? "17%" : "33%"}
+                                Save {region === "india" ? "40%" : "33%"}
                             </span>
                         </button>
                     </div>
@@ -117,8 +117,8 @@ export default function UpgradePage() {
                             <Card
                                 key={plan.name}
                                 className={`relative ${plan.popular
-                                        ? "border-2 border-purple-500 shadow-xl scale-105"
-                                        : "border-gray-200 bg-white"
+                                    ? "border-2 border-purple-500 shadow-xl scale-105"
+                                    : "border-gray-200 bg-white"
                                     }`}
                             >
                                 {plan.popular && (
@@ -160,8 +160,8 @@ export default function UpgradePage() {
                                     {/* CTA Button */}
                                     <Button
                                         className={`w-full h-12 text-base ${plan.popular
-                                                ? "bg-purple-600 hover:bg-purple-700 text-white"
-                                                : "bg-white border-2 border-gray-300 text-black hover:bg-gray-50"
+                                            ? "bg-purple-600 hover:bg-purple-700 text-white"
+                                            : "bg-white border-2 border-gray-300 text-black hover:bg-gray-50"
                                             }`}
                                     >
                                         {plan.cta}

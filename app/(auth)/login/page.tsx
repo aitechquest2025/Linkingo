@@ -280,7 +280,7 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
                 <div className="relative z-10 max-w-lg text-center space-y-6">
                     <h2 className="text-4xl font-bold leading-tight">Your entire digital world, in one link.</h2>
-                    <p className="text-lg text-indigo-100">Join 25M+ creators using Linkingo to share everything they create, curate and sell.</p>
+                    <p className="text-lg text-indigo-100">Join thousands of creators using Linkingo to share everything they create, curate and sell.</p>
                 </div>
                 {/* Decorative Circles */}
                 <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
