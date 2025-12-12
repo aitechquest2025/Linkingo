@@ -226,9 +226,27 @@ export default function SettingsPage() {
                         placeholder="yourdomain.com"
                         className="bg-white border-zinc-300"
                     />
-                    <p className="text-xs text-zinc-500 mt-2">
-                        Point your domain's CNAME record to linkingo.vercel.app
-                    </p>
+                    {profile.customDomain && (
+                        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                            <h4 className="font-semibold text-black mb-2">DNS Configuration</h4>
+                            <p className="text-sm text-zinc-700 mb-3">
+                                Add this CNAME record at your domain provider:
+                            </p>
+                            <div className="bg-white p-3 rounded border border-blue-300 font-mono text-sm">
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="text-zinc-600">Type:</div>
+                                    <div className="text-black font-semibold">CNAME</div>
+                                    <div className="text-zinc-600">Name:</div>
+                                    <div className="text-black font-semibold">@ or www</div>
+                                    <div className="text-zinc-600">Value:</div>
+                                    <div className="text-black font-semibold">{profile.username}.linkingo.in</div>
+                                </div>
+                            </div>
+                            <p className="text-xs text-zinc-500 mt-2">
+                                DNS changes may take up to 24 hours to propagate
+                            </p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 

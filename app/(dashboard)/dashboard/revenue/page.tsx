@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Download, Loader2, DollarSign } from "lucide-react";
-import { collection, query, where, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, serverTimestamp, getDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 interface RevenueEntry {
@@ -34,7 +35,10 @@ const REVENUE_CATEGORIES = [
 
 export default function RevenuePage() {
     const { user } = useAuth();
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
+    const [isPremium, setIsPremium] = useState(false);
+    const [checkingAccess, setCheckingAccess] = useState(true);
     const [entries, setEntries] = useState<RevenueEntry[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [adding, setAdding] = useState(false);
@@ -47,9 +51,33 @@ export default function RevenuePage() {
 
     useEffect(() => {
         if (user) {
-            loadRevenue();
+            checkPremiumAccess();
         }
     }, [user]);
+
+    const checkPremiumAccess = async () => {
+        if (!user) return;
+        setCheckingAccess(true);
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            const premium = userDoc.data()?.subscriptionStatus === 'premium';
+            setIsPremium(premium);
+
+            if (!premium) {
+                // Free users get redirected to upgrade page
+                router.push('/dashboard/upgrade');
+                return;
+            }
+
+            // Premium users can access revenue tracking
+            loadRevenue();
+        } catch (error) {
+            console.error("Error checking premium access:", error);
+            router.push('/dashboard/upgrade');
+        } finally {
+            setCheckingAccess(false);
+        }
+    };
 
     const loadRevenue = async () => {
         if (!user) return;
