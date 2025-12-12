@@ -184,20 +184,6 @@ export default function ContactPage() {
                                 </CardContent>
                             </Card>
 
-                            {/* FAQ Link */}
-                            <Card className="border-zinc-200 bg-violet-50 shadow-lg">
-                                <CardContent className="pt-6">
-                                    <h3 className="font-semibold text-black mb-2">
-                                        Looking for quick answers?
-                                    </h3>
-                                    <p className="text-zinc-600 text-sm mb-4">
-                                        Check out our FAQ section for instant help with common questions.
-                                    </p>
-                                    <Button variant="outline" className="w-full border-violet-300 text-violet-700 hover:bg-violet-100">
-                                        Visit FAQ
-                                    </Button>
-                                </CardContent>
-                            </Card>
                         </div>
                     </div>
                 </div>
