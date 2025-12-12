@@ -96,6 +96,9 @@ export default function PublicProfilePage() {
 
     const trackPageView = async (userId: string) => {
         try {
+            // Only track on client-side
+            if (typeof window === 'undefined') return;
+
             await fetch("/api/track", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -103,8 +106,8 @@ export default function PublicProfilePage() {
                     userId,
                     type: "view",
                     metadata: {
-                        referrer: document.referrer,
-                        userAgent: navigator.userAgent
+                        referrer: document.referrer || "",
+                        userAgent: navigator.userAgent || ""
                     }
                 })
             });
