@@ -2,12 +2,11 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Chrome, ArrowRight, Loader2, Phone, Mail, KeyRound } from "lucide-react";
+import { Chrome, Loader2, Phone, Mail, KeyRound } from "lucide-react";
 import Link from "next/link";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Recaptcha } from "@/components/auth/recaptcha";
 import { RecaptchaVerifier } from "firebase/auth";
 import { auth } from "@/lib/firebase";
@@ -49,8 +48,11 @@ export default function LoginPage() {
         setIsLoading("email");
         try {
             await loginWithEmail(email, password);
-        } catch (error) {
-            alert("Login failed. Please check your credentials.");
+        } catch (error: any) {
+            const message = error.code === 'auth/invalid-credential'
+                ? "Invalid email or password."
+                : error.message;
+            alert(message);
         } finally {
             setIsLoading(null);
         }
@@ -64,13 +66,6 @@ export default function LoginPage() {
         }
         setIsLoading("phone_send");
         try {
-            // Need a div with ID 'recaptcha-container' for invisible recaptcha if using phone auth specifically, 
-            // but we are using v2. For phone auth, let's use the explicit appVerifier with v2 or invisible. 
-            // Simplified: Assuming standard v2 for now on the form, but Firebase Phone requires its own verifier usually.
-            // For this implementation, let's assume we pass the global recaptcha-container.
-
-            // Note: Firebase Phone Auth typically manages its own ReCAPTCHA unless configured otherwise.
-            // We'll create a simplified verifier here attached to the button or hidden div.
             window.recaptchaVerifier = new RecaptchaVerifier(auth, 'sign-in-button', {
                 'size': 'invisible',
             });
@@ -78,9 +73,9 @@ export default function LoginPage() {
             const appVerifier = window.recaptchaVerifier;
             const result = await loginWithPhone(phoneNumber, appVerifier);
             setConfirmationResult(result);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("Failed to send OTP. Ensure phone number includes country code (e.g., +91).");
+            alert(`Failed to send OTP: ${error.message}`);
         } finally {
             setIsLoading(null);
         }
@@ -109,178 +104,192 @@ export default function LoginPage() {
     };
 
     return (
-        <Card className="border-none shadow-2xl bg-white/10 backdrop-blur-xl w-full max-w-md mx-auto">
-            <CardHeader className="space-y-1 text-center">
-                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                    Linkingo
-                </CardTitle>
-                <CardDescription className="text-gray-300">
-                    Sign in to manage your digital identity
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-                <div className="flex gap-2 justify-center mb-2">
-                    <Button
-                        variant={authMethod === "email" ? "default" : "secondary"}
-                        size="sm"
-                        onClick={() => setAuthMethod("email")}
-                        className="w-1/2"
-                    >
-                        <Mail className="w-4 h-4 mr-2" /> Email
-                    </Button>
-                    <Button
-                        variant={authMethod === "phone" ? "default" : "secondary"}
-                        size="sm"
-                        onClick={() => setAuthMethod("phone")}
-                        className="w-1/2"
-                    >
-                        <Phone className="w-4 h-4 mr-2" /> Phone
-                    </Button>
-                </div>
+        <div className="w-full h-screen grid lg:grid-cols-2">
+            {/* Left Side - Form */}
+            <div className="flex flex-col justify-center px-8 md:px-16 lg:px-24 bg-white dark:bg-black">
+                <div className="w-full max-w-sm mx-auto space-y-8">
+                    <div className="space-y-2 text-center lg:text-left">
+                        <Link href="/" className="inline-block mb-8">
+                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Linkingo</span>
+                        </Link>
+                        <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">Welcome back</h1>
+                        <p className="text-zinc-500 dark:text-zinc-400">Enter your details to access your account.</p>
+                    </div>
 
-                {authMethod === "email" && (
-                    <>
-                        <div className="grid gap-2">
-                            <Input
-                                type="email"
-                                placeholder="name@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-violet-500"
-                            />
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-2 gap-2 bg-zinc-100 dark:bg-zinc-900 p-1 rounded-lg">
+                            <Button
+                                variant={authMethod === "email" ? "default" : "ghost"}
+                                onClick={() => setAuthMethod("email")}
+                                className={`w-full ${authMethod === 'email' ? 'shadow-sm' : ''}`}
+                            >
+                                <Mail className="w-4 h-4 mr-2" /> Email
+                            </Button>
+                            <Button
+                                variant={authMethod === "phone" ? "default" : "ghost"}
+                                onClick={() => setAuthMethod("phone")}
+                                className={`w-full ${authMethod === 'phone' ? 'shadow-sm' : ''}`}
+                            >
+                                <Phone className="w-4 h-4 mr-2" /> Phone
+                            </Button>
                         </div>
-                        <div className="grid gap-2">
-                            <Input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-violet-500"
-                            />
-                        </div>
-                        <div className="flex justify-end">
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button variant="link" className="px-0 text-gray-400 hover:text-white text-xs">
-                                        Forgot Password?
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px] bg-zinc-950 border-zinc-800 text-white">
-                                    <DialogHeader>
-                                        <DialogTitle>Reset Password</DialogTitle>
-                                        <DialogDescription>
-                                            Enter your email address and we'll send you a link to reset your password.
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
+
+                        {authMethod === "email" && (
+                            <div className="space-y-4">
+                                <div className="space-y-2">
+                                    <Input
+                                        type="email"
+                                        placeholder="name@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="h-12 bg-transparent border-zinc-200 dark:border-zinc-800 text-black dark:text-white"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Input
+                                        type="password"
+                                        placeholder="Password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="h-12 bg-transparent border-zinc-200 dark:border-zinc-800 text-black dark:text-white"
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button variant="link" className="px-0 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 text-sm">
+                                                Forgot password?
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-[425px]">
+                                            <DialogHeader>
+                                                <DialogTitle>Reset Password</DialogTitle>
+                                                <DialogDescription>
+                                                    Enter your email address to receive a reset link.
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="grid gap-4 py-4">
+                                                <Input
+                                                    id="reset-email"
+                                                    placeholder="name@example.com"
+                                                    value={resetEmail}
+                                                    onChange={(e) => setResetEmail(e.target.value)}
+                                                />
+                                                {resetSent && <p className="text-green-600 text-sm">Reset link sent!</p>}
+                                            </div>
+                                            <Button onClick={handleResetPassword} disabled={resetSent}>
+                                                Send Reset Link
+                                            </Button>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                            </div>
+                        )}
+
+                        {authMethod === "phone" && (
+                            <div className="space-y-4">
+                                {!confirmationResult ? (
+                                    <div className="space-y-2">
                                         <Input
-                                            id="reset-email"
-                                            placeholder="name@example.com"
-                                            value={resetEmail}
-                                            onChange={(e) => setResetEmail(e.target.value)}
-                                            className="col-span-3 bg-white/5 border-white/10 text-white"
+                                            type="tel"
+                                            placeholder="+91 98765 43210"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            className="h-12 bg-transparent border-zinc-200 dark:border-zinc-800 text-black dark:text-white"
                                         />
-                                        {resetSent && <p className="text-green-500 text-sm">Reset link sent!</p>}
+                                        <p className="text-xs text-zinc-500">Include country code (e.g. +91)</p>
                                     </div>
-                                    <Button onClick={handleResetPassword} disabled={resetSent}>
-                                        Send Reset Link
-                                    </Button>
-                                </DialogContent>
-                            </Dialog>
+                                ) : (
+                                    <div className="space-y-2">
+                                        <Input
+                                            type="text"
+                                            placeholder="Enter 6-digit OTP"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            className="h-12 bg-transparent border-zinc-200 dark:border-zinc-800 text-black dark:text-white"
+                                        />
+                                    </div>
+                                )}
+                                <div id="sign-in-button"></div>
+                            </div>
+                        )}
+
+                        <div className="flex justify-center">
+                            <Recaptcha onChange={setRecaptchaToken} />
                         </div>
-                    </>
-                )}
 
-                {authMethod === "phone" && (
-                    <>
-                        {!confirmationResult ? (
-                            <div className="grid gap-2">
-                                <Input
-                                    type="tel"
-                                    placeholder="+91 98765 43210"
-                                    value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-violet-500"
-                                />
-                                <p className="text-xs text-gray-400">Include country code (e.g. +91)</p>
-                            </div>
+                        {authMethod === "email" ? (
+                            <Button
+                                onClick={handleEmailLogin}
+                                disabled={!!isLoading || !email || !password || !recaptchaToken}
+                                className="w-full h-12 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-200"
+                            >
+                                {isLoading === "email" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
+                                Sign In
+                            </Button>
                         ) : (
-                            <div className="grid gap-2">
-                                <Input
-                                    type="text"
-                                    placeholder="Enter 6-digit OTP"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-violet-500"
-                                />
+                            <Button
+                                onClick={confirmationResult ? handleVerifyOtp : handleSendOtp}
+                                disabled={!!isLoading || !phoneNumber || (confirmationResult && !otp) || (!confirmationResult && !recaptchaToken)}
+                                className="w-full h-12 bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-200"
+                            >
+                                {isLoading === "phone_send" || isLoading === "phone_verify" ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Phone className="mr-2 h-4 w-4" />
+                                )}
+                                {confirmationResult ? "Verify OTP" : "Send OTP"}
+                            </Button>
+                        )}
+
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
                             </div>
-                        )}
-                        <div id="sign-in-button"></div>
-                    </>
-                )}
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-white dark:bg-black px-2 text-zinc-500">Or continue with</span>
+                            </div>
+                        </div>
 
-                <Recaptcha onChange={setRecaptchaToken} />
+                        <Button
+                            variant="outline"
+                            onClick={handleGoogleLogin}
+                            disabled={!!isLoading}
+                            className="w-full h-12 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-black dark:text-white"
+                        >
+                            {isLoading === "google" ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Chrome className="mr-2 h-4 w-4 text-red-500" />
+                            )}
+                            Google
+                        </Button>
 
-                {authMethod === "email" ? (
-                    <Button
-                        onClick={handleEmailLogin}
-                        disabled={!!isLoading || !email || !password || !recaptchaToken}
-                        className="w-full bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white"
-                    >
-                        {isLoading === "email" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <KeyRound className="mr-2 h-4 w-4" />}
-                        Sign In
-                    </Button>
-                ) : (
-                    <Button
-                        onClick={confirmationResult ? handleVerifyOtp : handleSendOtp}
-                        disabled={!!isLoading || !phoneNumber || (confirmationResult && !otp) || (!confirmationResult && !recaptchaToken)}
-                        className="w-full bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white"
-                    >
-                        {isLoading === "phone_send" || isLoading === "phone_verify" ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Phone className="mr-2 h-4 w-4" />
-                        )}
-                        {confirmationResult ? "Verify OTP" : "Send OTP"}
-                    </Button>
-                )}
-
-                <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-white/20" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-transparent px-2 text-gray-400">
-                            Or continue with
-                        </span>
+                        <div className="text-center text-sm">
+                            Don't have an account?{" "}
+                            <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500 underline">
+                                Sign up for free
+                            </Link>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <Button
-                    variant="glass"
-                    onClick={handleGoogleLogin}
-                    disabled={!!isLoading}
-                    className="w-full hover:scale-105 transition-transform"
-                >
-                    {isLoading === "google" ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                        <Chrome className="mr-2 h-4 w-4 text-red-500" />
-                    )}
-                    Google
-                </Button>
-            </CardContent>
-            <CardFooter>
-                <div className="text-center text-sm text-gray-400 w-full">
-                    Don't have an account?{" "}
-                    <Link href="/register" className="underline hover:text-white transition-colors">
-                        Sign up
-                    </Link>
+            {/* Right Side - Visual */}
+            <div className="hidden lg:flex flex-col justify-center items-center bg-gradient-to-br from-violet-600 to-indigo-700 text-white p-12 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+                <div className="relative z-10 max-w-lg text-center space-y-6">
+                    <h2 className="text-4xl font-bold leading-tight">Your entire digital world, in one link.</h2>
+                    <p className="text-lg text-indigo-100">Join 25M+ creators using Linkingo to share everything they create, curate and sell.</p>
                 </div>
-            </CardFooter>
-        </Card>
+                {/* Decorative Circles */}
+                <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+            </div>
+        </div>
     );
 }
+
 declare global {
     interface Window {
         recaptchaVerifier: any;
