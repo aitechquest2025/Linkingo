@@ -50,6 +50,7 @@ export default function PublicProfilePage() {
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [links, setLinks] = useState<Link[]>([]);
+    const [userId, setUserId] = useState<string>("");
 
     useEffect(() => {
         loadProfile();
@@ -69,11 +70,16 @@ export default function PublicProfilePage() {
             }
 
             const userData = snapshot.docs[0].data() as UserProfile;
+            const userDocId = snapshot.docs[0].id;
             setProfile(userData);
+            setUserId(userDocId);
+
+            // Track page view
+            trackPageView(userDocId);
 
             // Load user's links
             const linksRef = collection(db, "links");
-            const linksQuery = query(linksRef, where("userId", "==", snapshot.docs[0].id), where("active", "==", true));
+            const linksQuery = query(linksRef, where("userId", "==", userDocId), where("active", "==", true));
             const linksSnapshot = await getDocs(linksQuery);
 
             const userLinks = linksSnapshot.docs
@@ -85,6 +91,41 @@ export default function PublicProfilePage() {
             console.error("Error loading profile:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const trackPageView = async (userId: string) => {
+        try {
+            await fetch("/api/track", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId,
+                    type: "view",
+                    metadata: {
+                        referrer: document.referrer,
+                        userAgent: navigator.userAgent
+                    }
+                })
+            });
+        } catch (error) {
+            console.error("Error tracking page view:", error);
+        }
+    };
+
+    const trackLinkClick = async (userId: string, linkId: string) => {
+        try {
+            await fetch("/api/track", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId,
+                    linkId,
+                    type: "click"
+                })
+            });
+        } catch (error) {
+            console.error("Error tracking click:", error);
         }
     };
 
@@ -177,6 +218,7 @@ export default function PublicProfilePage() {
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onClick={() => trackLinkClick(userId, link.id)}
                                 className={`block w-full bg-white hover:bg-zinc-50 border-2 border-zinc-200 hover:border-violet-500 transition-all ${getButtonStyle()} p-4 text-center font-medium text-black shadow-sm hover:shadow-md group`}
                             >
                                 <div className="flex items-center justify-center gap-2">

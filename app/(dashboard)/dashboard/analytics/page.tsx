@@ -1,23 +1,58 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TrendingUp, Users, MousePointerClick, BarChart3 } from "lucide-react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { getTotalStats, getLinkAnalytics } from "@/lib/analytics";
 
 export default function AnalyticsPage() {
-    // Mock data - replace with real analytics
-    const stats = {
-        totalClicks: 1234,
-        pageViews: 5678,
-        clickRate: 21.7,
-        topLink: "My Portfolio"
+    const { user } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        totalClicks: 0,
+        pageViews: 0,
+        clickRate: 0
+    });
+    const [linkPerformance, setLinkPerformance] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (user) {
+            loadAnalytics();
+        }
+    }, [user]);
+
+    const loadAnalytics = async () => {
+        if (!user) return;
+        setLoading(true);
+
+        try {
+            // Get user's links
+            const linksQuery = query(collection(db, "links"), where("userId", "==", user.uid));
+            const linksSnapshot = await getDocs(linksQuery);
+            const links = linksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+            // Get total stats
+            const totalStats = await getTotalStats(user.uid, 30);
+            setStats({
+                totalClicks: totalStats.totalClicks,
+                pageViews: totalStats.totalViews,
+                clickRate: totalStats.clickRate
+            });
+
+            // Get link performance
+            const linkStats = await getLinkAnalytics(user.uid, links, 30);
+            setLinkPerformance(linkStats);
+        } catch (error) {
+            console.error("Error loading analytics:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const linkPerformance = [
-        { name: "My Portfolio", clicks: 456, views: 1200 },
-        { name: "Instagram", clicks: 389, views: 980 },
-        { name: "YouTube Channel", clicks: 267, views: 750 },
-        { name: "Twitter", clicks: 122, views: 450 },
-    ];
+    const topLink = linkPerformance.length > 0 ? linkPerformance[0].linkTitle : "N/A";
 
     return (
         <div className="max-w-6xl mx-auto space-y-8">
@@ -35,7 +70,7 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold text-black">{stats.totalClicks.toLocaleString()}</div>
-                        <p className="text-xs text-green-600 mt-1">+12% from last month</p>
+                        <p className="text-xs text-zinc-500 mt-1">Last 30 days</p>
                     </CardContent>
                 </Card>
 
@@ -46,7 +81,7 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold text-black">{stats.pageViews.toLocaleString()}</div>
-                        <p className="text-xs text-green-600 mt-1">+8% from last month</p>
+                        <p className="text-xs text-zinc-500 mt-1">Last 30 days</p>
                     </CardContent>
                 </Card>
 
@@ -57,7 +92,7 @@ export default function AnalyticsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-3xl font-bold text-black">{stats.clickRate}%</div>
-                        <p className="text-xs text-green-600 mt-1">+3% from last month</p>
+                        <p className="text-xs text-zinc-500 mt-1">Avg per view</p>
                     </CardContent>
                 </Card>
 
@@ -67,8 +102,10 @@ export default function AnalyticsPage() {
                         <BarChart3 className="h-4 w-4 text-amber-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-lg font-bold text-black truncate">{stats.topLink}</div>
-                        <p className="text-xs text-zinc-500 mt-1">{linkPerformance[0].clicks} clicks</p>
+                        <div className="text-lg font-bold text-black truncate">{topLink}</div>
+                        <p className="text-xs text-zinc-500 mt-1">
+                            {linkPerformance.length > 0 ? `${linkPerformance[0].clicks} clicks` : "No data"}
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -80,31 +117,35 @@ export default function AnalyticsPage() {
                     <CardDescription>See how each link is performing</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {linkPerformance.map((link, idx) => {
-                            const clickRate = ((link.clicks / link.views) * 100).toFixed(1);
-                            return (
+                    {linkPerformance.length > 0 ? (
+                        <div className="space-y-4">
+                            {linkPerformance.map((link, idx) => (
                                 <div key={idx} className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <p className="font-medium text-black">{link.name}</p>
+                                            <p className="font-medium text-black">{link.linkTitle}</p>
                                             <p className="text-sm text-zinc-500">{link.clicks} clicks • {link.views} views</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-semibold text-purple-600">{clickRate}%</p>
+                                            <p className="font-semibold text-purple-600">{link.clickRate}%</p>
                                             <p className="text-xs text-zinc-500">click rate</p>
                                         </div>
                                     </div>
                                     <div className="w-full bg-zinc-100 rounded-full h-2">
                                         <div
                                             className="bg-purple-600 h-2 rounded-full transition-all"
-                                            style={{ width: `${clickRate}%` }}
+                                            style={{ width: `${Math.min(link.clickRate, 100)}%` }}
                                         />
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <BarChart3 className="h-12 w-12 text-zinc-300 mx-auto mb-3" />
+                            <p className="text-zinc-500">No analytics data yet. Share your page to start tracking!</p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
