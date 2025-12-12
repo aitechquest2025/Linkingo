@@ -30,12 +30,14 @@ export default function ContactPage() {
                     Accept: "application/json",
                 },
                 body: JSON.stringify({
-                    access_key: "YOUR_ACCESS_KEY_HERE", // Get free key from web3forms.com
+                    access_key: "6837ae33-3b82-4b1a-af72-4012c991e42e", // Get free key from web3forms.com
+                    from_name: "Linkingo Contact Form",
                     name: formData.name,
                     email: formData.email,
                     subject: formData.subject,
                     message: formData.message,
                     to: "hellolinkingo@gmail.com",
+                    redirect: "https://linkingo.in/contact?success=true"
                 }),
             });
 
