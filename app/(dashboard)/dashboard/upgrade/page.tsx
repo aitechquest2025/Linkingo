@@ -17,7 +17,7 @@ export default function UpgradePage() {
             priceGlobal: { monthly: 0, yearly: 0 },
             description: "Perfect for getting started with your link-in-bio page.",
             features: [
-                "Up to 5 links",
+                "Unlimited links",
                 "Basic analytics",
                 "Linkingo branding",
                 "Community support"

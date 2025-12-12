@@ -27,7 +27,7 @@ export function LinkManager() {
 
     // TODO: Fetch this from actual subscription hook
     const isPremium = false;
-    const LINK_LIMIT = 5;
+    // Unlimited links for all users now
 
     useEffect(() => {
         if (user) {
@@ -53,7 +53,8 @@ export function LinkManager() {
         }
     };
 
-    const canAddLink = isPremium || links.length < LINK_LIMIT;
+    // All users can add unlimited links
+    const canAddLink = true;
 
     const handleAddLink = async () => {
         if (!user) return;
