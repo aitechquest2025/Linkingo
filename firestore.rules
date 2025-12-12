@@ -111,5 +111,18 @@ service cloud.firestore {
       // Only owners can update/delete
       allow update, delete: if isOwner(resource.data.userId);
     }
+    
+    // Short Links Collection (for link shortener)
+    match /shortLinks/{linkId} {
+      // Anyone can read (for redirects)
+      allow read: if true;
+      
+      // Only authenticated users can create
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid;
+      
+      // Only owners can update/delete
+      allow update, delete: if isOwner(resource.data.userId);
+    }
   }
 }
