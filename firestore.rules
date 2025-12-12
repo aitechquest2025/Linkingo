@@ -2,64 +2,117 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper Functions
+    
+    // Helper function to check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
-
+    
+    // Helper function to check if user is superadmin
+    function isSuperAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superadmin';
+    }
+    
+    // Helper function to check if user is premium
+    function isPremium() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'premium';
+    }
+    
+    // Helper function to check if user owns the resource
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-
-    function isSuperAdmin() {
-      // In a real production app, use Custom Claims for better security/performance
-      // For now, we check the 'role' field on the user document
-      return isAuthenticated() && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "super_admin";
-    }
-
-    // --- Users Collection ---
-    // public profiles are readable by everyone
-    // sensitive data should be in a subcollection or private doc if needed
+    
+    // Users Collection
     match /users/{userId} {
-      allow read: if true; // Public profiles need to be visible
-      allow create: if isAuthenticated() && request.auth.uid == userId; // Users create their own profile on signup
+      // Anyone authenticated can read any user profile (for public pages)
+      allow read: if isAuthenticated();
       
-      // Only owner can update, but prevent them from promoting themselves to super_admin
+      // Users can only write to their own document
+      // Superadmins can write to any user document
+      allow write: if isOwner(userId) || isSuperAdmin();
+      
+      // Prevent users from changing their own role (only superadmin can)
       allow update: if isOwner(userId) && 
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
+                      (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
+    }
+    
+    // Subscriptions Collection
+    match /subscriptions/{subId} {
+      // Users can read their own subscriptions
+      // Superadmins can read all subscriptions
+      allow read: if isOwner(resource.data.userId) || isSuperAdmin();
       
-      allow delete: if isOwner(userId) || isSuperAdmin();
+      // Only superadmins can create/update/delete subscriptions
+      allow write: if isSuperAdmin();
     }
-
-    // --- Links Collection ---
-    match /links/{linkId} {
-      // Public can read visible links
-      allow read: if resource.data.isVisible == true || isOwner(resource.data.userId) || isSuperAdmin();
+    
+    // Revenue Collection
+    match /revenue/{revenueId} {
+      // Users can read their own revenue entries
+      // Superadmins can read all revenue
+      allow read: if isOwner(resource.data.userId) || isSuperAdmin();
       
-      // Owners can do full CRUD on their own links
-      allow create: if isOwner(request.resource.data.userId);
-      allow update: if isOwner(resource.data.userId);
-      allow delete: if isOwner(resource.data.userId);
+      // Users can create/update/delete their own revenue entries
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isOwner(resource.data.userId);
     }
-
-    // --- Revenue Entries (Private) ---
-    match /revenue_entries/{entryId} {
-      allow read, write: if isOwner(resource.data.userId) || isSuperAdmin();
-      allow create: if isOwner(request.resource.data.userId);
+    
+    // Partners Collection
+    match /partners/{partnerId} {
+      // Only superadmins can access partners
+      allow read, write: if isSuperAdmin();
     }
-
-    // --- System Logs (Super Admin Only) ---
-    match /system_logs/{logId} {
+    
+    // Promo Codes Collection
+    match /promoCodes/{codeId} {
+      // Anyone can read promo codes (to validate them)
+      allow read: if isAuthenticated();
+      
+      // Only superadmins can create/update/delete promo codes
+      allow write: if isSuperAdmin();
+    }
+    
+    // Logs Collection
+    match /logs/{logId} {
+      // Only superadmins can read logs
       allow read: if isSuperAdmin();
-      allow create: if isAuthenticated(); // Allow system actions (from client) to log, or restrict to Admin only
-      allow update, delete: if false; // Logs should be immutable
+      
+      // System can write logs (authenticated users can create logs)
+      allow create: if isAuthenticated();
+      
+      // Only superadmins can update/delete logs
+      allow update, delete: if isSuperAdmin();
     }
-
-    // --- Generic Fallback ---
-    match /{document=**} {
-      allow read, write: if false; // Deny everything else by default
+    
+    // Links Collection (for user's public links)
+    match /links/{linkId} {
+      // Anyone can read links (for public pages)
+      allow read: if true;
+      
+      // Users can manage their own links
+      // Free users: max 5 links
+      // Premium users: unlimited
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid &&
+                      (isPremium() || 
+                       get(/databases/$(database)/documents/users/$(request.auth.uid)).data.linkCount < 5);
+      
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+    
+    // Analytics Collection (for tracking clicks)
+    match /analytics/{analyticsId} {
+      // Users can read their own analytics
+      allow read: if isOwner(resource.data.userId) || isSuperAdmin();
+      
+      // System can write analytics (anyone can create click events)
+      allow create: if true;
+      
+      // Only owners can update/delete
+      allow update, delete: if isOwner(resource.data.userId);
     }
   }
 }
