@@ -136,10 +136,25 @@ export default function CustomizePage() {
                                 {THEMES.map(t => (
                                     <button
                                         key={t.id}
-                                        onClick={() => setTheme({ ...theme, colorTheme: t.id })}
+                                        onClick={() => {
+                                            // Map theme colors to actual background colors
+                                            const themeColors: Record<string, string> = {
+                                                'default': '#ffffff',
+                                                'dark': '#18181b',
+                                                'ocean': '#eff6ff',
+                                                'sunset': '#7f1d1d', // Dark red/maroon
+                                                'forest': '#f0fdf4',
+                                                'lavender': '#faf5ff'
+                                            };
+                                            setTheme({
+                                                ...theme,
+                                                colorTheme: t.id,
+                                                customColor: themeColors[t.id] || '#ffffff'
+                                            });
+                                        }}
                                         className={`p-4 rounded-lg border-2 transition-all ${theme.colorTheme === t.id
-                                                ? "border-violet-600 ring-2 ring-violet-200"
-                                                : "border-zinc-200 hover:border-zinc-400"
+                                            ? "border-violet-600 ring-2 ring-violet-200"
+                                            : "border-zinc-200 hover:border-zinc-400"
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -177,8 +192,8 @@ export default function CustomizePage() {
                                         }}
                                         disabled={bg.premium && !isPremium}
                                         className={`w-full p-3 text-left rounded-lg border transition-all flex items-center justify-between ${theme.backgroundType === bg.id
-                                                ? "border-violet-600 bg-violet-50"
-                                                : "border-zinc-200 hover:border-zinc-400"
+                                            ? "border-violet-600 bg-violet-50"
+                                            : "border-zinc-200 hover:border-zinc-400"
                                             } ${bg.premium && !isPremium ? "opacity-60" : ""}`}
                                     >
                                         <span className="text-sm font-medium text-black">{bg.name}</span>
@@ -249,8 +264,8 @@ export default function CustomizePage() {
                                         key={style.id}
                                         onClick={() => setTheme({ ...theme, buttonStyle: style.id })}
                                         className={`w-full p-4 border-2 transition-all ${theme.buttonStyle === style.id
-                                                ? "border-violet-600 bg-violet-50"
-                                                : "border-zinc-200 hover:border-zinc-400"
+                                            ? "border-violet-600 bg-violet-50"
+                                            : "border-zinc-200 hover:border-zinc-400"
                                             } ${style.class}`}
                                     >
                                         <span className="text-sm font-medium text-black">{style.name}</span>
@@ -285,8 +300,8 @@ export default function CustomizePage() {
                                         }}
                                         disabled={anim.premium && !isPremium}
                                         className={`w-full p-3 text-left rounded-lg border transition-all flex items-center justify-between ${theme.animation === anim.id
-                                                ? "border-violet-600 bg-violet-50"
-                                                : "border-zinc-200 hover:border-zinc-400"
+                                            ? "border-violet-600 bg-violet-50"
+                                            : "border-zinc-200 hover:border-zinc-400"
                                             } ${anim.premium && !isPremium ? "opacity-60" : ""}`}
                                     >
                                         <span className="text-sm font-medium text-black">{anim.name}</span>
@@ -310,8 +325,8 @@ export default function CustomizePage() {
                                         key={font}
                                         onClick={() => setTheme({ ...theme, fontFamily: font })}
                                         className={`w-full p-3 text-left rounded-lg border transition-all ${theme.fontFamily === font
-                                                ? "border-violet-600 bg-violet-50"
-                                                : "border-zinc-200 hover:border-zinc-400"
+                                            ? "border-violet-600 bg-violet-50"
+                                            : "border-zinc-200 hover:border-zinc-400"
                                             }`}
                                     >
                                         <span className="text-sm font-medium text-black capitalize">{font}</span>
