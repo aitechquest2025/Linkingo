@@ -19,10 +19,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: "Upgrade", href: "/dashboard/upgrade", icon: Crown },
     ];
 
+    // Generate username from email
+    const username = user?.email?.split('@')[0] || 'preview';
+
     return (
-        <div className="min-h-screen bg-white dark:bg-black">
+        <div className="min-h-screen bg-zinc-50">
             {/* Top Navigation Bar */}
-            <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black sticky top-0 z-50">
+            <header className="border-b border-zinc-200 bg-white sticky top-0 z-50 shadow-sm">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
@@ -30,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <div className="size-8 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center">
                                 <span className="font-bold text-white text-sm">L</span>
                             </div>
-                            <span className="font-bold text-lg text-black dark:text-white">Linkingo</span>
+                            <span className="font-bold text-lg text-black">Linkingo</span>
                         </Link>
 
                         {/* Horizontal Navigation */}
@@ -44,8 +47,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                             variant="ghost"
                                             size="sm"
                                             className={`${isActive
-                                                    ? "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30"
-                                                    : "text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                                                    ? "text-violet-600 bg-violet-50"
+                                                    : "text-zinc-600 hover:text-black hover:bg-zinc-100"
                                                 }`}
                                         >
                                             <Icon className="mr-2 h-4 w-4" />
@@ -58,13 +61,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                         {/* Right Side Actions */}
                         <div className="flex items-center gap-3">
-                            <Link href={`/${user?.email?.split('@')[0] || 'preview'}`} target="_blank">
-                                <Button variant="outline" size="sm" className="hidden sm:flex border-zinc-300 dark:border-zinc-700">
+                            <Link href={`/${username}`} target="_blank">
+                                <Button variant="outline" size="sm" className="hidden sm:flex border-zinc-300 hover:bg-zinc-50">
                                     <ExternalLink className="mr-2 h-4 w-4" />
                                     View Page
                                 </Button>
                             </Link>
-                            <Button variant="ghost" size="icon" onClick={logout} className="text-zinc-600 dark:text-zinc-400">
+                            <Button variant="ghost" size="icon" onClick={logout} className="text-zinc-600 hover:bg-zinc-100">
                                 <LogOut className="h-4 w-4" />
                             </Button>
                         </div>
