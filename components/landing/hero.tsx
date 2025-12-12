@@ -18,7 +18,7 @@ export function Hero() {
                         className="inline-flex items-center justify-center px-4 py-1.5 mb-8 rounded-full border border-violet-500/30 bg-violet-500/10 backdrop-blur-sm"
                     >
                         <Sparkles className="w-4 h-4 text-violet-400 mr-2" />
-                        <span className="text-sm font-medium text-violet-300">New: One-Click UPI Subscriptions 🇮🇳</span>
+                        <span className="text-sm font-medium text-violet-300">🎉 Save 40% on Yearly Plans - Limited Time!</span>
                     </motion.div>
 
                     <motion.h1

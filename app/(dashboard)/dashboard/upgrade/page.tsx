@@ -29,7 +29,7 @@ export default function UpgradePage() {
             name: "Pro",
             icon: "👑",
             priceIndia: { monthly: 79, yearly: 570 }, // 40% discount: ₹948 → ₹570
-            priceGlobal: { monthly: 1.49, yearly: 10 },
+            priceGlobal: { monthly: 1.99, yearly: 14.28 }, // 40% discount: $23.88 → $14.28
             description: "Unlock all features and grow your audience faster.",
             features: [
                 "Unlimited links",
@@ -103,7 +103,7 @@ export default function UpgradePage() {
                         >
                             Yearly
                             <span className="bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">
-                                Save {region === "india" ? "40%" : "33%"}
+                                Save 40%
                             </span>
                         </button>
                     </div>

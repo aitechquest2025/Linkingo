@@ -107,11 +107,9 @@ export default function TermsPage() {
                     <section className="mb-12">
                         <h2 className="text-2xl font-bold text-black mb-4">6. Payment and Subscriptions</h2>
                         <h3 className="text-xl font-semibold text-black mb-3 mt-6">6.1 Premium Plans</h3>
-                        <p className="text-zinc-700 mb-4">Premium subscriptions are billed:</p>
-                        <ul className="list-disc pl-6 text-zinc-700 space-y-2">
-                            <li><strong>Monthly</strong>: ₹79/month (India) or $1.49/month (Global)</li>
-                            <li><strong>Yearly</strong>: ₹570/year (India) or $10/year (Global)</li>
-                        </ul>
+                        <p className="text-zinc-700">
+                            For current subscription pricing and plans, please visit our <Link href="/dashboard/upgrade" className="text-violet-600 hover:text-violet-700 font-semibold underline">pricing page</Link>.
+                        </p>
 
                         <h3 className="text-xl font-semibold text-black mb-3 mt-6">6.2 Billing</h3>
                         <ul className="list-disc pl-6 text-zinc-700 space-y-2">
@@ -123,7 +121,7 @@ export default function TermsPage() {
 
                         <h3 className="text-xl font-semibold text-black mb-3 mt-6">6.3 Refunds</h3>
                         <p className="text-zinc-700">
-                            Refunds are provided at our discretion. Generally, we offer refunds within 7 days of purchase if you have not used premium features. Contact <a href="mailto:hellolinkingo@gmail.com" className="text-violet-600 hover:text-violet-700 font-semibold">hellolinkingo@gmail.com</a> for refund requests.
+                            Refunds are provided at our discretion. Contact <a href="mailto:hellolinkingo@gmail.com" className="text-violet-600 hover:text-violet-700 font-semibold">hellolinkingo@gmail.com</a> for refund requests.
                         </p>
                     </section>
 
