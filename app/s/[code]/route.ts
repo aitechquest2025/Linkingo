@@ -4,9 +4,9 @@ import { db } from "@/lib/firebase";
 
 export async function GET(
     request: Request,
-    { params }: { params: { code: string } }
+    { params }: { params: Promise<{ code: string }> }
 ) {
-    const code = params.code;
+    const { code } = await params;
 
     try {
         // Find the short link
