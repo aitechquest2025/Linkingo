@@ -121,7 +121,7 @@ export default function PrivacyPage() {
                         <h2 className="text-2xl font-bold text-black mb-4">4. Data Sharing and Disclosure</h2>
                         <p className="text-zinc-700 mb-4">We may share your information with:</p>
                         <ul className="list-disc pl-6 text-zinc-700 space-y-2">
-                            <li><strong>Service Providers:</strong> Firebase (Google), Vercel, payment processors (for UPI transactions)</li>
+                            <li><strong>Service Providers:</strong> Firebase (Google), Vercel, payment processors</li>
                             <li><strong>Analytics Partners:</strong> To understand usage patterns (anonymized data)</li>
                             <li><strong>Legal Authorities:</strong> When required by law or to protect our rights</li>
                             <li><strong>Business Transfers:</strong> In case of merger, acquisition, or asset sale</li>
@@ -237,7 +237,6 @@ export default function PrivacyPage() {
                         <div className="bg-violet-50 p-6 rounded-lg">
                             <p className="font-semibold text-black mb-2">Data Protection Officer</p>
                             <p className="text-zinc-700">Email: <a href="mailto:hellolinkingo@gmail.com" className="text-violet-600 hover:text-violet-700 font-semibold">hellolinkingo@gmail.com</a></p>
-                            <p className="text-zinc-700">Company: Linkingo</p>
                             <p className="text-zinc-700">Location: India</p>
                         </div>
                     </section>
