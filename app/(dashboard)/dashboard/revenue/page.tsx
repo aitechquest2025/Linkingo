@@ -161,16 +161,15 @@ export default function RevenuePage() {
                         <div className="space-y-4 py-4">
                             <div>
                                 <label className="text-sm font-medium mb-2 block">Category</label>
-                                <Select value={newEntry.category} onValueChange={(value) => setNewEntry({ ...newEntry, category: value })}>
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {REVENUE_CATEGORIES.map(cat => (
-                                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <select
+                                    value={newEntry.category}
+                                    onChange={(e) => setNewEntry({ ...newEntry, category: e.target.value })}
+                                    className="w-full p-2 border border-zinc-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    {REVENUE_CATEGORIES.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label className="text-sm font-medium mb-2 block">Amount (₹)</label>
