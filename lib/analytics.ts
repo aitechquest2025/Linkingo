@@ -51,10 +51,16 @@ export async function getUserAnalytics(userId: string, days: number = 30) {
         );
 
         const snapshot = await getDocs(q);
-        const events = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        })) as AnalyticsEvent[];
+        const events = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                userId: data.userId,
+                linkId: data.linkId,
+                type: data.type,
+                timestamp: data.timestamp,
+                metadata: data.metadata
+            } as AnalyticsEvent;
+        });
 
         return events;
     } catch (error) {
