@@ -47,8 +47,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                             variant="ghost"
                                             size="sm"
                                             className={`${isActive
-                                                    ? "text-violet-600 bg-violet-50"
-                                                    : "text-zinc-600 hover:text-black hover:bg-zinc-100"
+                                                ? "text-violet-600 bg-violet-50"
+                                                : "text-zinc-600 hover:text-black hover:bg-zinc-100"
                                                 }`}
                                         >
                                             <Icon className="mr-2 h-4 w-4" />
