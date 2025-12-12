@@ -1,47 +1,110 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Plus, Trash2, ExternalLink, Lock, Crown, GripVertical } from "lucide-react";
+import { Plus, Trash2, ExternalLink, Lock, Crown, GripVertical, Loader2 } from "lucide-react";
+import { collection, query, where, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface Link {
     id: string;
     title: string;
     url: string;
     active: boolean;
+    order: number;
 }
 
 export function LinkManager() {
-    const [links, setLinks] = useState<Link[]>([
-        { id: "1", title: "My Portfolio", url: "https://portfolio.com", active: true },
-        { id: "2", title: "Instagram", url: "https://instagram.com/user", active: true },
-    ]);
+    const { user } = useAuth();
+    const [links, setLinks] = useState<Link[]>([]);
     const [newTitle, setNewTitle] = useState("");
     const [newUrl, setNewUrl] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [adding, setAdding] = useState(false);
 
     // TODO: Fetch this from actual subscription hook
     const isPremium = false;
     const LINK_LIMIT = 5;
 
+    useEffect(() => {
+        if (user) {
+            loadLinks();
+        }
+    }, [user]);
+
+    const loadLinks = async () => {
+        if (!user) return;
+        setLoading(true);
+        try {
+            const q = query(collection(db, "links"), where("userId", "==", user.uid));
+            const snapshot = await getDocs(q);
+            const userLinks = snapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() } as Link))
+                .sort((a, b) => a.order - b.order);
+            setLinks(userLinks);
+        } catch (error) {
+            console.error("Error loading links:", error);
+            alert("Failed to load links");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const canAddLink = isPremium || links.length < LINK_LIMIT;
 
-    const handleAddLink = () => {
+    const handleAddLink = async () => {
+        if (!user) return;
         if (!canAddLink) {
             alert("Upgrade to Premium to add more links!");
             return;
         }
-        if (newTitle && newUrl) {
-            setLinks([...links, { id: Date.now().toString(), title: newTitle, url: newUrl, active: true }]);
+        if (!newTitle || !newUrl) {
+            alert("Please enter both title and URL");
+            return;
+        }
+
+        setAdding(true);
+        try {
+            await addDoc(collection(db, "links"), {
+                userId: user.uid,
+                title: newTitle,
+                url: newUrl,
+                active: true,
+                order: links.length,
+                createdAt: serverTimestamp()
+            });
             setNewTitle("");
             setNewUrl("");
+            loadLinks(); // Reload links
+        } catch (error) {
+            console.error("Error adding link:", error);
+            alert("Failed to add link. Check console for details.");
+        } finally {
+            setAdding(false);
         }
     };
 
-    const deleteLink = (id: string) => {
-        setLinks(links.filter(l => l.id !== id));
+    const deleteLink = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this link?")) return;
+        try {
+            await deleteDoc(doc(db, "links", id));
+            loadLinks(); // Reload links
+        } catch (error) {
+            console.error("Error deleting link:", error);
+            alert("Failed to delete link");
+        }
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto space-y-6">
@@ -122,9 +185,22 @@ export function LinkManager() {
                                 </div>
                             </div>
                         ) : (
-                            <Button onClick={handleAddLink} className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Link
+                            <Button
+                                onClick={handleAddLink}
+                                disabled={adding}
+                                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                            >
+                                {adding ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Adding...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Add Link
+                                    </>
+                                )}
                             </Button>
                         )}
                     </div>
