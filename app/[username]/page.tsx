@@ -153,7 +153,12 @@ export default function PublicProfilePage() {
 
     // Theme configuration
     const getBackgroundStyle = () => {
-        const { theme } = profile;
+        const theme = profile?.theme || {
+            backgroundType: 'solid',
+            customColor: '#ffffff',
+            buttonStyle: 'rounded'
+        };
+
         if (theme.backgroundType === "gradient") {
             return {
                 background: `linear-gradient(135deg, ${theme.gradientStart || '#8b5cf6'}, ${theme.gradientEnd || '#ec4899'})`
@@ -172,7 +177,8 @@ export default function PublicProfilePage() {
     };
 
     const getButtonStyle = () => {
-        switch (profile.theme.buttonStyle) {
+        const theme = profile?.theme || { buttonStyle: 'rounded' };
+        switch (theme.buttonStyle) {
             case "rounded": return "rounded-full";
             case "square": return "rounded-md";
             case "pill": return "rounded-3xl";
