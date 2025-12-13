@@ -75,6 +75,8 @@ export default function UpgradePage() {
                 return;
             }
 
+            console.log("Creating subscription for:", { region, billingCycle, userId: user.uid });
+
             // Call API to get PayPal subscription URL
             const response = await fetch("/api/paypal/create-subscription", {
                 method: "POST",
@@ -88,18 +90,22 @@ export default function UpgradePage() {
                 }),
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error("Failed to create subscription");
+                console.error("API error:", data);
+                throw new Error(data.details || data.error || "Failed to create subscription");
             }
 
-            const data = await response.json();
+            console.log("Subscription created:", data);
 
             // Redirect to PayPal subscription page
             window.location.href = data.subscriptionUrl;
 
         } catch (error) {
             console.error("Payment error:", error);
-            alert("Something went wrong. Please try again.");
+            const errorMessage = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+            alert(errorMessage);
         } finally {
             setIsProcessing(false);
         }
