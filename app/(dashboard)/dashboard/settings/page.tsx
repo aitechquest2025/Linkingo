@@ -36,6 +36,10 @@ export default function SettingsPage() {
             github: ""
         }
     });
+    const [originalProfile, setOriginalProfile] = useState(profile);
+
+    // Check if there are unsaved changes
+    const hasChanges = JSON.stringify(profile) !== JSON.stringify(originalProfile);
 
     useEffect(() => {
         if (user) {
@@ -61,7 +65,7 @@ export default function SettingsPage() {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 const data = userDoc.data();
-                setProfile({
+                const loadedProfile = {
                     username: data.username || "",
                     displayName: data.displayName || "",
                     bio: data.bio || "",
@@ -78,7 +82,9 @@ export default function SettingsPage() {
                         facebook: "",
                         github: ""
                     }
-                });
+                };
+                setProfile(loadedProfile);
+                setOriginalProfile(loadedProfile);
             }
         } catch (error) {
             console.error("Error loading profile:", error);
@@ -176,10 +182,12 @@ export default function SettingsPage() {
         setSaving(true);
         try {
             await updateDoc(doc(db, "users", user.uid), profile);
+            // Update original state to match saved state
+            setOriginalProfile(profile);
             alert("Profile updated successfully!");
         } catch (error) {
             console.error("Error saving profile:", error);
-            alert("Failed to save profile");
+            alert("Failed to save profile. Please try again.");
         } finally {
             setSaving(false);
         }
@@ -483,8 +491,8 @@ export default function SettingsPage() {
                 </Button>
                 <Button
                     onClick={handleSave}
-                    disabled={saving}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                    disabled={saving || !hasChanges}
+                    className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {saving ? (
                         <>
