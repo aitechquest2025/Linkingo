@@ -17,7 +17,7 @@ service cloud.firestore {
     // Helper function to check if user is premium
     function isPremium() {
       return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionStatus == 'premium';
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscription.status == 'premium';
     }
     
     // Helper function to check if user owns the resource
@@ -34,9 +34,10 @@ service cloud.firestore {
       // Superadmins can write to any user document
       allow write: if isOwner(userId) || isSuperAdmin();
       
-      // Prevent users from changing their own role (only superadmin can)
+      // Prevent users from changing their own role or subscription status
+      // Only superadmin and server (via webhook) can update subscription
       allow update: if isOwner(userId) && 
-                      (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
+                      (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'subscription']));
     }
     
     // Subscriptions Collection

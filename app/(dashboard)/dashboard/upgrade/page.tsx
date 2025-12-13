@@ -3,11 +3,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Crown } from "lucide-react";
+import { Check, Crown, Shield, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function UpgradePage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
     const [region, setRegion] = useState<"india" | "global">("india");
+    const [isProcessing, setIsProcessing] = useState(false);
+    const router = useRouter();
 
     const plans = [
         {
@@ -53,6 +57,54 @@ export default function UpgradePage() {
 
     const getCurrency = () => region === "india" ? "₹" : "$";
 
+    const handleUpgrade = async (planName: string) => {
+        if (planName === "Free") {
+            router.push("/register");
+            return;
+        }
+
+        setIsProcessing(true);
+
+        try {
+            // Get current user ID from auth context
+            // You'll need to pass this from your auth provider
+            const userId = localStorage.getItem("userId"); // Replace with actual auth context
+
+            if (!userId) {
+                alert("Please log in to upgrade your account.");
+                router.push("/login");
+                return;
+            }
+
+            // Call API to get PayPal subscription URL
+            const response = await fetch("/api/paypal/create-subscription", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    region,
+                    billingCycle,
+                    userId,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to create subscription");
+            }
+
+            const data = await response.json();
+
+            // Redirect to PayPal subscription page
+            window.location.href = data.subscriptionUrl;
+
+        } catch (error) {
+            console.error("Payment error:", error);
+            alert("Something went wrong. Please try again.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white py-12">
@@ -62,10 +114,26 @@ export default function UpgradePage() {
                     <p className="text-base md:text-lg font-bold">🎉 Limited Time Offer: Save 40% on Yearly Plans! 🎉</p>
                 </div>
 
-                {/* Header */}
+                {/* Header with Product Image */}
                 <div className="text-center mb-12">
+                    <div className="flex justify-center mb-6">
+                        <Image
+                            src="/images/linkingo-premium-product.png"
+                            alt="Linkingo Premium"
+                            width={120}
+                            height={120}
+                            className="rounded-2xl shadow-lg"
+                            priority
+                        />
+                    </div>
                     <h1 className="text-5xl font-bold text-black mb-4">Plans and pricing</h1>
                     <p className="text-zinc-600 mb-6">Choose the perfect plan for your needs</p>
+
+                    {/* Security Badge */}
+                    <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-full text-sm mb-6">
+                        <Shield className="h-4 w-4" />
+                        <span className="font-medium">Secure payment powered by PayPal</span>
+                    </div>
 
                     {/* Region Toggle */}
                     <div className="inline-flex items-center gap-3 bg-white rounded-full p-1 shadow-sm border border-purple-200 mb-4">
@@ -165,12 +233,21 @@ export default function UpgradePage() {
 
                                     {/* CTA Button */}
                                     <Button
+                                        onClick={() => handleUpgrade(plan.name)}
+                                        disabled={isProcessing}
                                         className={`w-full h-12 text-base ${plan.popular
                                             ? "bg-purple-600 hover:bg-purple-700 text-white"
                                             : "bg-white border-2 border-gray-300 text-black hover:bg-gray-50"
                                             }`}
                                     >
-                                        {plan.cta}
+                                        {isProcessing ? (
+                                            <span className="flex items-center gap-2">
+                                                <Zap className="h-4 w-4 animate-pulse" />
+                                                Processing...
+                                            </span>
+                                        ) : (
+                                            plan.cta
+                                        )}
                                     </Button>
 
                                     {/* Features */}
@@ -186,6 +263,64 @@ export default function UpgradePage() {
                             </Card>
                         );
                     })}
+                </div>
+
+                {/* Trust Indicators */}
+                <div className="mt-16 text-center">
+                    <p className="text-sm text-gray-500 mb-4">Trusted by creators across India</p>
+                    <div className="flex justify-center gap-8 flex-wrap">
+                        <div className="flex items-center gap-2 text-gray-600">
+                            <Shield className="h-5 w-5 text-green-600" />
+                            <span className="text-sm">SSL Encrypted</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                            <Check className="h-5 w-5 text-green-600" />
+                            <span className="text-sm">Money-back Guarantee</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                            <Zap className="h-5 w-5 text-green-600" />
+                            <span className="text-sm">Instant Activation</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* FAQ Section */}
+                <div className="mt-16 max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+                    <div className="space-y-4">
+                        <details className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                            <summary className="font-semibold cursor-pointer text-lg">
+                                Can I cancel anytime?
+                            </summary>
+                            <p className="mt-3 text-gray-600">
+                                Yes! You can cancel your subscription at any time. No questions asked, no hidden fees.
+                            </p>
+                        </details>
+                        <details className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                            <summary className="font-semibold cursor-pointer text-lg">
+                                What payment methods do you accept?
+                            </summary>
+                            <p className="mt-3 text-gray-600">
+                                We accept all major payment methods through PayPal, including credit/debit cards, UPI, and PayPal balance.
+                            </p>
+                        </details>
+                        <details className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                            <summary className="font-semibold cursor-pointer text-lg">
+                                Is there a free trial?
+                            </summary>
+                            <p className="mt-3 text-gray-600">
+                                Yes! We offer a 7-day free trial for the Pro plan. No credit card required to start.
+                            </p>
+                        </details>
+                        <details className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                            <summary className="font-semibold cursor-pointer text-lg">
+                                Do you offer refunds?
+                            </summary>
+                            <p className="mt-3 text-gray-600">
+                                Yes! We offer a 30-day money-back guarantee. If you're not satisfied, we'll refund your payment.
+                            </p>
+                        </details>
+                    </div>
                 </div>
             </div>
         </div>

@@ -61,7 +61,7 @@
             "queryScope": "COLLECTION",
             "fields": [
                 {
-                    "fieldPath": "username",
+                    "fieldPath": "subscription.subscriptionId",
                     "order": "ASCENDING"
                 }
             ]
