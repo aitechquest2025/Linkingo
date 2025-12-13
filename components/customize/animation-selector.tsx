@@ -41,8 +41,8 @@ export function AnimationSelector({ selectedId, onSelect, isPremiumUser, label, 
                         key={animation.id}
                         onClick={() => handleSelect(animation)}
                         className={`relative p-4 rounded-lg border-2 text-left transition-all ${selectedId === animation.id
-                                ? 'border-purple-600 bg-purple-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-purple-600 bg-purple-50'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         <div className="flex items-center justify-between">
@@ -57,10 +57,7 @@ export function AnimationSelector({ selectedId, onSelect, isPremiumUser, label, 
 
                         {/* Animation preview */}
                         <div className="mt-3">
-                            <div
-                                className="w-full h-10 bg-purple-100 rounded flex items-center justify-center text-sm font-medium"
-                                style={{ cssText: animation.css }}
-                            >
+                            <div className="w-full h-10 bg-purple-100 rounded flex items-center justify-center text-sm font-medium">
                                 Preview
                             </div>
                         </div>
