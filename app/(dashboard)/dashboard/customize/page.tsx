@@ -229,21 +229,23 @@ export default function CustomizePage() {
                                             colors: { ...prev.colors, text: color }
                                         }))}
                                     />
-                                    <ColorPicker
-                                        label="Link Color"
-                                        value={customization.colors.link}
-                                        onChange={(color) => setCustomization(prev => ({
-                                            ...prev,
-                                            colors: { ...prev.colors, link: color }
-                                        }))}
-                                    />
+                                    <div className="relative z-10">
+                                        <ColorPicker
+                                            label="Link Color"
+                                            value={customization.colors.link}
+                                            onChange={(color) => setCustomization(prev => ({
+                                                ...prev,
+                                                colors: { ...prev.colors, link: color }
+                                            }))}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
 
                     {/* Background Section */}
-                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mt-4">
                         <button
                             onClick={() => toggleSection('background')}
                             className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
