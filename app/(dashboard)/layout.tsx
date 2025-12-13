@@ -48,6 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             {navigation.map((item) => {
                                 const isActive = pathname === item.href;
                                 const Icon = item.icon;
+                                const isSettings = item.name === "Settings";
                                 return (
                                     <Link key={item.name} href={item.href}>
                                         <Button
@@ -56,10 +57,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                             className={`${isActive
                                                 ? "text-violet-600 bg-violet-50"
                                                 : "text-zinc-600 hover:text-black hover:bg-zinc-100"
-                                                }`}
+                                                } relative`}
                                         >
                                             <Icon className="mr-2 h-4 w-4" />
                                             {item.name}
+                                            {isSettings && isPremium && (
+                                                <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-bold">
+                                                    <Crown className="h-3 w-3" />
+                                                    Pro
+                                                </span>
+                                            )}
                                         </Button>
                                     </Link>
                                 );

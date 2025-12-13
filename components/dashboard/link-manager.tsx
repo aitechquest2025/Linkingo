@@ -110,7 +110,7 @@ export function LinkManager() {
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             {/* Header Stats */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2">
                 <Card className="border-gray-200 bg-white">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium text-zinc-600">Total Links</CardTitle>
@@ -126,25 +126,6 @@ export function LinkManager() {
                     <CardContent>
                         <div className="text-3xl font-bold text-black">
                             ∞
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-gray-200 bg-white">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-zinc-600">Status</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-lg font-semibold flex items-center gap-2">
-                            {isPremium ? (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold">
-                                    <Crown className="h-4 w-4" />
-                                    Pro
-                                </span>
-                            ) : (
-                                <span className="inline-flex items-center px-3 py-1 rounded-full bg-pink-600 text-white text-sm font-bold">
-                                    Free
-                                </span>
-                            )}
                         </div>
                     </CardContent>
                 </Card>
