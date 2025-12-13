@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 
 export function useAuth() {
     const [user, setUser] = useState<User | null>(null);
+    const [userData, setUserData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -29,14 +30,29 @@ export function useAuth() {
             if (currentUser) {
                 setUser(currentUser);
                 await saveUserToFirestore(currentUser);
+                // Fetch user data from Firestore
+                await loadUserData(currentUser.uid);
             } else {
                 setUser(null);
+                setUserData(null);
             }
             setLoading(false);
         });
 
         return () => unsubscribe();
     }, []);
+
+    const loadUserData = async (uid: string) => {
+        try {
+            const userRef = doc(db, "users", uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                setUserData(userSnap.data());
+            }
+        } catch (error) {
+            console.error("Error loading user data:", error);
+        }
+    };
 
     const signInWithGoogle = async () => {
         try {
@@ -129,6 +145,7 @@ export function useAuth() {
 
     return {
         user,
+        userData,
         loading,
         signInWithGoogle,
         loginWithEmail,
