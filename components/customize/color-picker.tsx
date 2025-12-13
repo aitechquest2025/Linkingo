@@ -46,8 +46,11 @@ export function ColorPicker({ value, onChange, label }: ColorPickerProps) {
             {/* Color Preview Button */}
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center gap-3 p-3 border border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white"
+                onClick={() => {
+                    console.log('Color picker clicked!', label);
+                    setIsOpen(!isOpen);
+                }}
+                className="w-full flex items-center gap-3 p-3 border border-gray-300 rounded-lg hover:border-gray-400 transition-colors bg-white cursor-pointer"
             >
                 <div
                     className="w-10 h-10 rounded-md border border-gray-200 flex-shrink-0"

@@ -18,15 +18,15 @@ interface Link {
 }
 
 export function LinkManager() {
-    const { user } = useAuth();
+    const { user, userData } = useAuth();
     const [links, setLinks] = useState<Link[]>([]);
     const [newTitle, setNewTitle] = useState("");
     const [newUrl, setNewUrl] = useState("");
     const [loading, setLoading] = useState(true);
     const [adding, setAdding] = useState(false);
 
-    // TODO: Fetch this from actual subscription hook
-    const isPremium = false;
+    // Check if user has Pro subscription
+    const isPremium = userData?.subscription?.status === 'active';
     // Unlimited links for all users now
 
     useEffect(() => {
@@ -134,14 +134,16 @@ export function LinkManager() {
                         <CardTitle className="text-sm font-medium text-zinc-600">Status</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-lg font-semibold text-black flex items-center gap-2">
+                        <div className="text-lg font-semibold flex items-center gap-2">
                             {isPremium ? (
-                                <>
-                                    <Crown className="h-5 w-5 text-amber-500" />
-                                    Premium
-                                </>
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-bold">
+                                    <Crown className="h-4 w-4" />
+                                    Pro
+                                </span>
                             ) : (
-                                "Free"
+                                <span className="inline-flex items-center px-3 py-1 rounded-full bg-pink-600 text-white text-sm font-bold">
+                                    Free
+                                </span>
                             )}
                         </div>
                     </CardContent>
