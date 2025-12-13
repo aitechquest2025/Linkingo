@@ -36,8 +36,8 @@ export function BackgroundSelector({ selectedId, onSelect, isPremiumUser }: Back
                         key={category}
                         onClick={() => setCategoryFilter(category)}
                         className={`px-4 py-2 rounded-lg border capitalize whitespace-nowrap ${categoryFilter === category
-                                ? 'bg-purple-600 text-white border-purple-600'
-                                : 'bg-white border-gray-200 hover:bg-gray-50'
+                            ? 'bg-purple-600 text-white border-purple-600'
+                            : 'bg-white border-gray-200 hover:bg-gray-50'
                             }`}
                     >
                         {category}
@@ -52,8 +52,8 @@ export function BackgroundSelector({ selectedId, onSelect, isPremiumUser }: Back
                         key={background.id}
                         onClick={() => handleSelect(background)}
                         className={`relative rounded-lg border-2 overflow-hidden transition-all ${selectedId === background.id
-                                ? 'border-purple-600 ring-2 ring-purple-200'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-purple-600 ring-2 ring-purple-200'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         {/* Premium badge */}
@@ -64,10 +64,7 @@ export function BackgroundSelector({ selectedId, onSelect, isPremiumUser }: Back
                         )}
 
                         {/* Background preview */}
-                        <div
-                            className="h-24 w-full"
-                            style={{ cssText: background.css }}
-                        />
+                        <div className="h-24 w-full" />
 
                         {/* Name */}
                         <div className="p-2 bg-white border-t">
