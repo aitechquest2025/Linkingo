@@ -311,18 +311,10 @@ export default function UpgradePage() {
                         </details>
                         <details className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
                             <summary className="font-semibold cursor-pointer text-lg">
-                                Is there a free trial?
+                                When does my Pro plan start?
                             </summary>
                             <p className="mt-3 text-gray-600">
-                                Yes! We offer a 7-day free trial for the Pro plan. No credit card required to start.
-                            </p>
-                        </details>
-                        <details className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                            <summary className="font-semibold cursor-pointer text-lg">
-                                Do you offer refunds?
-                            </summary>
-                            <p className="mt-3 text-gray-600">
-                                Yes! We offer a 30-day money-back guarantee. If you're not satisfied, we'll refund your payment.
+                                Your Pro plan starts immediately after payment. You'll get instant access to all premium features.
                             </p>
                         </details>
                     </div>
