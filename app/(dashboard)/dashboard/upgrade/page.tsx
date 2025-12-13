@@ -13,7 +13,7 @@ export default function UpgradePage() {
     const [region, setRegion] = useState<"india" | "global">("india");
     const [isProcessing, setIsProcessing] = useState(false);
     const router = useRouter();
-    const { user } = useAuth();
+    const { user, userData } = useAuth();
 
     const plans = [
         {
@@ -33,7 +33,7 @@ export default function UpgradePage() {
                 "QR code generator",
                 "Linkingo branding"
             ],
-            cta: "Get started",
+            cta: user ? "Continue with Free" : "Get Started Free",
             popular: false
         },
         {
@@ -69,7 +69,13 @@ export default function UpgradePage() {
 
     const handleUpgrade = async (planName: string) => {
         if (planName === "Free") {
-            router.push("/register");
+            // If user is logged in, go to dashboard (they already have free plan)
+            // If not logged in, go to register
+            if (user) {
+                router.push("/dashboard");
+            } else {
+                router.push("/register");
+            }
             return;
         }
 

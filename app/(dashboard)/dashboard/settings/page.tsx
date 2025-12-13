@@ -38,12 +38,21 @@ export default function SettingsPage() {
     });
 
     useEffect(() => {
-        if (user && userData) {
+        if (user) {
             loadProfile();
-            // Check if user has active Pro subscription
-            setIsPremium(userData.subscription?.status === 'active');
         }
-    }, [user, userData]);
+    }, [user]);
+
+    // Separate effect for Pro status to avoid race condition
+    useEffect(() => {
+        if (userData) {
+            console.log('Settings - userData loaded:', userData);
+            console.log('Settings - subscription:', userData.subscription);
+            const isActive = userData.subscription?.status === 'active';
+            console.log('Settings - isPremium:', isActive);
+            setIsPremium(isActive);
+        }
+    }, [userData]);
 
     const loadProfile = async () => {
         if (!user) return;

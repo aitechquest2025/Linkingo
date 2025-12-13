@@ -61,12 +61,21 @@ export default function CustomizePage() {
     });
 
     useEffect(() => {
-        if (user && userData) {
+        if (user) {
             loadCustomization();
-            // Check if user has active Pro subscription
-            setIsPremium(userData.subscription?.status === 'active');
         }
-    }, [user, userData]);
+    }, [user]);
+
+    // Separate effect for Pro status to avoid race condition
+    useEffect(() => {
+        if (userData) {
+            console.log('userData loaded:', userData);
+            console.log('subscription:', userData.subscription);
+            const isActive = userData.subscription?.status === 'active';
+            console.log('isPremium:', isActive);
+            setIsPremium(isActive);
+        }
+    }, [userData]);
 
     const loadCustomization = async () => {
         if (!user) return;
