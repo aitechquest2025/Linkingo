@@ -45,11 +45,11 @@ const defaultCustomization: CustomizationState = {
 };
 
 export default function CustomizePage() {
-    const { user } = useAuth();
+    const { user, userData } = useAuth();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [isPremium, setIsPremium] = useState(false);
     const [customization, setCustomization] = useState<CustomizationState>(defaultCustomization);
+    const [isPremium, setIsPremium] = useState(false);
 
     // Accordion state
     const [openSections, setOpenSections] = useState({
@@ -61,10 +61,12 @@ export default function CustomizePage() {
     });
 
     useEffect(() => {
-        if (user) {
+        if (user && userData) {
             loadCustomization();
+            // Check if user has active Pro subscription
+            setIsPremium(userData.subscription?.status === 'active');
         }
-    }, [user]);
+    }, [user, userData]);
 
     const loadCustomization = async () => {
         if (!user) return;
@@ -73,7 +75,6 @@ export default function CustomizePage() {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 const data = userDoc.data();
-                setIsPremium(data.subscription?.status === 'active');
                 if (data.customization) {
                     setCustomization({ ...defaultCustomization, ...data.customization });
                 }

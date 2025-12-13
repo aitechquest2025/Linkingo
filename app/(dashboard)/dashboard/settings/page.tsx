@@ -12,7 +12,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
 
 export default function SettingsPage() {
-    const { user } = useAuth();
+    const { user, userData } = useAuth();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState<"photo" | "logo" | null>(null);
@@ -38,10 +38,12 @@ export default function SettingsPage() {
     });
 
     useEffect(() => {
-        if (user) {
+        if (user && userData) {
             loadProfile();
+            // Check if user has active Pro subscription
+            setIsPremium(userData.subscription?.status === 'active');
         }
-    }, [user]);
+    }, [user, userData]);
 
     const loadProfile = async () => {
         if (!user) return;
@@ -50,7 +52,6 @@ export default function SettingsPage() {
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (userDoc.exists()) {
                 const data = userDoc.data();
-                setIsPremium(data.subscription?.status === 'active');
                 setProfile({
                     username: data.username || "",
                     displayName: data.displayName || "",
