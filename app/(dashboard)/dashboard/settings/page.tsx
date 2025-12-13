@@ -76,18 +76,40 @@ export default function SettingsPage() {
     };
 
     const handleImageUpload = async (file: File, type: "photo" | "logo") => {
-        if (!user) return;
+        if (!user) {
+            alert("Please log in to upload images");
+            return;
+        }
+
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            alert("File size must be less than 5MB");
+            return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert("Please upload an image file");
+            return;
+        }
+
         setUploading(type);
 
         try {
+            console.log(`Uploading ${type}:`, file.name, file.size, file.type);
+
             // Create a reference to the file in Firebase Storage
             const storageRef = ref(storage, `users/${user.uid}/${type}-${Date.now()}.${file.name.split('.').pop()}`);
 
+            console.log("Storage ref created:", storageRef.fullPath);
+
             // Upload the file
-            await uploadBytes(storageRef, file);
+            const uploadResult = await uploadBytes(storageRef, file);
+            console.log("Upload successful:", uploadResult);
 
             // Get the download URL
             const downloadURL = await getDownloadURL(storageRef);
+            console.log("Download URL:", downloadURL);
 
             // Update profile state
             if (type === "photo") {
@@ -102,9 +124,23 @@ export default function SettingsPage() {
             });
 
             alert(`${type === "photo" ? "Profile picture" : "Cover image"} uploaded successfully!`);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error uploading image:", error);
-            alert("Failed to upload image");
+            console.error("Error code:", error.code);
+            console.error("Error message:", error.message);
+
+            let errorMessage = "Failed to upload image. ";
+            if (error.code === 'storage/unauthorized') {
+                errorMessage += "You don't have permission to upload. Please check Firebase Storage rules.";
+            } else if (error.code === 'storage/canceled') {
+                errorMessage += "Upload was canceled.";
+            } else if (error.code === 'storage/unknown') {
+                errorMessage += "An unknown error occurred. Please try again.";
+            } else {
+                errorMessage += error.message;
+            }
+
+            alert(errorMessage);
         } finally {
             setUploading(null);
         }

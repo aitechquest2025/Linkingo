@@ -1,0 +1,55 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function to validate image files
+    function isValidImage() {
+      return request.resource.size < 5 * 1024 * 1024 // 5MB max
+             && request.resource.contentType.matches('image/.*');
+    }
+    
+    // User profile images (photos and covers)
+    match /users/{userId}/{imageType} {
+      // Allow read for all authenticated users (for public profiles)
+      allow read: if isAuthenticated();
+      
+      // Allow write only for the owner and only valid images
+      allow write: if isOwner(userId) && isValidImage();
+    }
+    
+    // Link images/assets
+    match /links/{linkId}/{allPaths=**} {
+      // Allow read for all authenticated users
+      allow read: if isAuthenticated();
+      
+      // Allow write for authenticated users (owner check done in Firestore)
+      allow write: if isAuthenticated() && isValidImage();
+    }
+    
+    // QR codes
+    match /qrcodes/{userId}/{qrId} {
+      // Allow read for all authenticated users
+      allow read: if isAuthenticated();
+      
+      // Allow write only for the owner
+      allow write: if isOwner(userId);
+    }
+    
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
