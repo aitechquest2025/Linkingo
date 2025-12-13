@@ -50,6 +50,7 @@ export default function UpgradePage() {
                 "30 fonts (25 premium)",
                 "20 animations (15 premium)",
                 "Advanced analytics",
+                "Custom domain",
                 "Remove branding",
                 "Priority support",
                 "Custom CSS (coming soon)"
