@@ -47,7 +47,7 @@ export default function UpgradePage() {
                 "Custom themes & backgrounds",
                 "API access"
             ],
-            cta: "Start free trial",
+            cta: "Upgrade to Pro",
             popular: true
         }
     ];
