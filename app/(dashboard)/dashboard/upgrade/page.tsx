@@ -25,8 +25,13 @@ export default function UpgradePage() {
             features: [
                 "Unlimited links",
                 "Basic analytics",
-                "Linkingo branding",
-                "Community support"
+                "5 color themes",
+                "5 backgrounds",
+                "2 button styles",
+                "5 fonts",
+                "5 basic animations",
+                "QR code generator",
+                "Linkingo branding"
             ],
             cta: "Get started",
             popular: false
@@ -38,14 +43,16 @@ export default function UpgradePage() {
             priceGlobal: { monthly: 1.99, yearly: 14.28 }, // 40% discount: $23.88 → $14.28
             description: "Unlock all features and grow your audience faster.",
             features: [
-                "Unlimited links",
+                "Everything in Free",
+                "30 color themes (25 premium)",
+                "30 backgrounds (25 premium)",
+                "10 button styles (8 premium)",
+                "30 fonts (25 premium)",
+                "20 animations (15 premium)",
                 "Advanced analytics",
-                "Custom domain",
                 "Remove branding",
                 "Priority support",
-                "Revenue tracking",
-                "Custom themes & backgrounds",
-                "API access"
+                "Custom CSS (coming soon)"
             ],
             cta: "Upgrade to Pro",
             popular: true

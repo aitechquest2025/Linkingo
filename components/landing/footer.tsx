@@ -7,7 +7,7 @@ export function Footer() {
                 {/* Social Media Icons - Top on Desktop, Bottom on Mobile */}
                 <div className="flex justify-center gap-6 mb-8 order-first md:order-none">
                     <Link
-                        href="https://twitter.com/linkingo"
+                        href="https://x.com/Linkingodotin"
                         target="_blank"
                         className="text-zinc-400 hover:text-white transition-all duration-300 hover:scale-110"
                         aria-label="X (Twitter)"
@@ -17,7 +17,7 @@ export function Footer() {
                         </svg>
                     </Link>
                     <Link
-                        href="https://bsky.app/profile/linkingo.in"
+                        href="https://bsky.app/profile/linkingo.bsky.social"
                         target="_blank"
                         className="text-zinc-400 hover:text-white transition-all duration-300 hover:scale-110"
                         aria-label="Bluesky"
@@ -27,7 +27,7 @@ export function Footer() {
                         </svg>
                     </Link>
                     <Link
-                        href="https://instagram.com/linkingo.in"
+                        href="https://www.instagram.com/linkingo.in?igsh=MmF0d2d3ZDhhN254"
                         target="_blank"
                         className="text-zinc-400 hover:text-white transition-all duration-300 hover:scale-110"
                         aria-label="Instagram"
