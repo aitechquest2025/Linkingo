@@ -1,27 +1,45 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Link2, IndianRupee, BarChart3 } from "lucide-react";
+import { Palette, QrCode, BarChart3, Link2, Crown, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 const features = [
     {
         title: "One Link for Everything",
-        description: "Combine all your social profiles, content, videos and links into a single, beautiful landing page.",
+        description: "Combine all your social profiles, content, and links into a single, beautiful landing page that's uniquely yours.",
         icon: Link2,
         gradient: "from-blue-500 to-cyan-500",
     },
     {
-        title: "Monetize with Subscriptions",
-        description: "Easily launch premium content subscriptions. Users pay via UPI to unlock your exclusive world.",
-        icon: IndianRupee,
+        title: "100+ Customization Options",
+        description: "Custom colors, 30 backgrounds, 30 fonts, 10 button styles, and 20 animations. Make your page truly unique with professional design tools.",
+        icon: Palette,
         gradient: "from-violet-500 to-fuchsia-500",
     },
     {
+        title: "Accept Payments via UPI",
+        description: "Collect payments from your audience using UPI, cards, and other Indian payment methods through Razorpay integration.",
+        icon: Crown,
+        gradient: "from-green-500 to-emerald-500",
+    },
+    {
         title: "Deep Analytics",
-        description: "Track your clicks, views, and revenue sources with privacy-friendly analytics to grow faster.",
+        description: "Track your clicks, views, and engagement with privacy-friendly analytics. Understand what content resonates with your audience.",
         icon: BarChart3,
         gradient: "from-amber-500 to-orange-500",
+    },
+    {
+        title: "QR Code Generator",
+        description: "Generate custom QR codes for your Linkingo page. Perfect for business cards, posters, and offline marketing.",
+        icon: QrCode,
+        gradient: "from-blue-500 to-purple-500",
+    },
+    {
+        title: "Lightning Fast",
+        description: "Built with Next.js for blazing-fast performance. Your page loads instantly, keeping your audience engaged.",
+        icon: Zap,
+        gradient: "from-purple-500 to-pink-500",
     },
 ];
 
@@ -37,7 +55,7 @@ export function Features() {
                         transition={{ duration: 0.5 }}
                         className="text-3xl md:text-5xl font-bold text-white mb-4"
                     >
-                        Everything you need to grow
+                        Everything you need to stand out
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -46,17 +64,17 @@ export function Features() {
                         transition={{ duration: 0.5, delay: 0.2 }}
                         className="text-zinc-400 max-w-2xl mx-auto"
                     >
-                        Powerful tools designed for Indian creators, built to help you scale your audience and income.
+                        Powerful tools designed for creators, built to help you showcase your work and grow your audience.
                     </motion.p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature, i) => (
                         <motion.div
                             key={i}
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: i * 0.2 }}
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
                         >
                             <Card className="bg-zinc-900 border-zinc-800 border overflow-hidden group hover:border-violet-500/50 transition-colors h-full">
                                 <CardContent className="p-8">

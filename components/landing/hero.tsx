@@ -39,7 +39,7 @@ export function Hero() {
                         transition={{ duration: 0.5, delay: 0.4 }}
                         className="text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed"
                     >
-                        Linkingo helps creators and influencers share everything they create, and launch subscriptions for their exclusive content with zero friction.
+                        Create your professional link-in-bio page with 100+ customization options. Share all your content, track analytics, and stand out from the crowd.
                     </motion.p>
 
                     <motion.div
@@ -56,7 +56,7 @@ export function Hero() {
                         </Link>
                         <Link href="/login">
                             <Button size="lg" variant="outline" className="h-14 px-8 text-base border-zinc-800 text-zinc-300 hover:bg-white/5 hover:text-white rounded-full bg-transparent transition-all hover:border-zinc-700">
-                                View Demo
+                                Sign In
                             </Button>
                         </Link>
                     </motion.div>
