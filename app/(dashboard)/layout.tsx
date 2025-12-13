@@ -8,17 +8,22 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const { logout, user } = useAuth();
+    const { logout, user, userData } = useAuth();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+    // Check if user has Pro subscription
+    const isPremium = userData?.subscription?.status === 'active';
+
+    // Filter navigation based on Pro status
     const navigation = [
         { name: "Links", href: "/dashboard", icon: Link2 },
         { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
         { name: "Revenue", href: "/dashboard/revenue", icon: DollarSign },
         { name: "Customize", href: "/dashboard/customize", icon: Palette },
         { name: "Settings", href: "/dashboard/settings", icon: Settings },
-        { name: "Upgrade", href: "/dashboard/upgrade", icon: Crown },
+        // Only show Upgrade if user is NOT premium
+        ...(!isPremium ? [{ name: "Upgrade", href: "/dashboard/upgrade", icon: Crown }] : []),
     ];
 
     // Generate username from email
