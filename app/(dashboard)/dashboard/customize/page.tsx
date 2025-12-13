@@ -110,10 +110,12 @@ export default function CustomizePage() {
             await updateDoc(doc(db, "users", user.uid), {
                 customization: customization
             });
+            // Update original state to match saved state
+            setOriginalCustomization(customization);
             alert("Customization saved successfully!");
         } catch (error) {
             console.error("Error saving customization:", error);
-            alert("Failed to save customization");
+            alert("Failed to save customization. Please try again.");
         } finally {
             setSaving(false);
         }
