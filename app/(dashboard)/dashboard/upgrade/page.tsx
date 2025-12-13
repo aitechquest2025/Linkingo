@@ -6,12 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Check, Crown, Shield, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function UpgradePage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
     const [region, setRegion] = useState<"india" | "global">("india");
     const [isProcessing, setIsProcessing] = useState(false);
     const router = useRouter();
+    const { user } = useAuth();
 
     const plans = [
         {
@@ -66,11 +68,8 @@ export default function UpgradePage() {
         setIsProcessing(true);
 
         try {
-            // Get current user ID from auth context
-            // You'll need to pass this from your auth provider
-            const userId = localStorage.getItem("userId"); // Replace with actual auth context
-
-            if (!userId) {
+            // Check if user is authenticated
+            if (!user || !user.uid) {
                 alert("Please log in to upgrade your account.");
                 router.push("/login");
                 return;
@@ -85,7 +84,7 @@ export default function UpgradePage() {
                 body: JSON.stringify({
                     region,
                     billingCycle,
-                    userId,
+                    userId: user.uid,
                 }),
             });
 
