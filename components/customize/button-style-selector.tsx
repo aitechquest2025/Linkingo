@@ -28,8 +28,8 @@ export function ButtonStyleSelector({ selectedId, onSelect, isPremiumUser }: But
                         key={style.id}
                         onClick={() => handleSelect(style)}
                         className={`relative p-6 rounded-lg border-2 transition-all ${selectedId === style.id
-                                ? 'border-purple-600 ring-2 ring-purple-200'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-purple-600 ring-2 ring-purple-200'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                     >
                         {/* Premium badge */}
@@ -41,10 +41,7 @@ export function ButtonStyleSelector({ selectedId, onSelect, isPremiumUser }: But
 
                         {/* Button preview */}
                         <div className="flex flex-col items-center gap-3">
-                            <div
-                                className="px-6 py-3 rounded-lg font-semibold"
-                                style={{ cssText: style.css.base }}
-                            >
+                            <div className="px-6 py-3 rounded-lg font-semibold bg-purple-600 text-white">
                                 Sample Button
                             </div>
                             <p className="text-sm font-medium text-gray-900">{style.name}</p>
