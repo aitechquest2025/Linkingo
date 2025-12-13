@@ -17,7 +17,7 @@ service cloud.firestore {
     // Helper function to check if user is premium
     function isPremium() {
       return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscription.status == 'premium';
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscription.status == 'active';
     }
     
     // Helper function to check if user owns the resource
