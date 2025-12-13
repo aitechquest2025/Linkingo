@@ -49,7 +49,11 @@ export default function CustomizePage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [customization, setCustomization] = useState<CustomizationState>(defaultCustomization);
+    const [originalCustomization, setOriginalCustomization] = useState<CustomizationState>(defaultCustomization);
     const [isPremium, setIsPremium] = useState(false);
+
+    // Check if there are unsaved changes
+    const hasChanges = JSON.stringify(customization) !== JSON.stringify(originalCustomization);
 
     // Accordion state
     const [openSections, setOpenSections] = useState({
@@ -85,7 +89,11 @@ export default function CustomizePage() {
             if (userDoc.exists()) {
                 const data = userDoc.data();
                 if (data.customization) {
-                    setCustomization({ ...defaultCustomization, ...data.customization });
+                    const loadedCustomization = { ...defaultCustomization, ...data.customization };
+                    setCustomization(loadedCustomization);
+                    setOriginalCustomization(loadedCustomization);
+                } else {
+                    setOriginalCustomization(defaultCustomization);
                 }
             }
         } catch (error) {
@@ -143,8 +151,8 @@ export default function CustomizePage() {
                     )}
                     <Button
                         onClick={handleSave}
-                        disabled={saving}
-                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                        disabled={saving || !hasChanges}
+                        className="bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {saving ? (
                             <>
